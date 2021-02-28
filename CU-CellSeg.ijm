@@ -615,7 +615,6 @@ function matchNucleiWithCells(target, counts)
   RoiManager.setGroup(5);  // unmatched regions, mark for later removal
 
   showProgress(0);  // reset progress bar
-  j = 0;  // jump index to cell within max nucleus offset
   for (n = 0; n < nuclei; ++n)  // iterate through nuclei
   {
     found = false;  // track matching of nucleus with cell
