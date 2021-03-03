@@ -83,7 +83,7 @@ nucleiChannels = newArray("dapi", "dsdna");  // mandatory, nuclei channels
 cellExpansion = 2.0;  // minimum cell radius [units] from closest nucleus
 cellExpansionLimit = 100.0;  // maximum cell radius [units] from closest nucleus
 cellMatrixContraction = 0.0;  // cellular matrix masks contraction [units]
-membraneWidth = 1.0;  //  membrane width [units] inside the cell outline
+membraneWidth = 1.5;  //  membrane width [units] inside the cell outline
 nucleiContraction = 0.0;  // nuclei masks contraction [units]
 
 // advanced user settings
