@@ -77,13 +77,13 @@ userThresholds = newArray(false, 0.75, 1e30, (0.75 * 32767), 1e30);  // default 
 // pixel classifier settings
 addTrainingFeatures = false;  // include additional training features for nuclei and cells
 cellMatrixChannels = newArray(0);  // optional, cell matrix channels: "beta-tubulin", "autofluo"
+nucleiChannels = newArray("dapi", "dsdna");  // mandatory, nuclei channels
 
 // cellular compartment settings
 cellExpansion = 2.0;  // minimum cell radius [units] from closest nucleus
 cellExpansionLimit = 100.0;  // maximum cell radius [units] from closest nucleus
 cellMatrixContraction = 0.0;  // cellular matrix masks contraction [units]
 membraneWidth = 1.0;  //  membrane width [units] inside the cell outline
-nucleiChannels = newArray("dapi", "dsdna");  // mandatory, nuclei channels
 nucleiContraction = 0.0;  // nuclei masks contraction [units]
 
 // advanced user settings
