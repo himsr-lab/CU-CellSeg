@@ -99,9 +99,9 @@ versionString = "CU-CellSeg v1.0 (2021-03-04)";
 print("\\Clear");  // clear Log window
 requires("1.53e");  // minimum ImageJ version
 run("ROI Manager...");  // start before batch mode
-run("Window/Level...");  // start for user convenience
 run("Roi Defaults...", "color=red stroke=0 group=0");
 roiManager("UseNames", "true");  // use ROI names as labels
+run("Brightness/Contrast...");  // start for user convenience
 file = File.openDialog("Select the first TIFF of your dataset");
 processFolder(file, suffixes, userThresholds);
 
