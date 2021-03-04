@@ -91,7 +91,7 @@ batchMode = true;  // speed up processing by limiting visual output
 cellMatrixChannelsLength = cellMatrixChannels.length;
 targetNames = newArray("nu", "ce", "me", "cy");  // labels for classes and file output
 targetCounts = initializeArray(targetNames.length, 0);  // regions of interest counts
-versionString = "CU-CellSeg v1.0 (2021-02-25)";
+versionString = "CU-CellSeg v1.0 (2021-03-04)";
 
 /*
  *  Start
@@ -994,7 +994,6 @@ function runWekaClassifier(image, target, path)
   {
     print("\tNo classifier file in dataset folder...");
     waitForUser(title, message);
-    call("trainableSegmentation.Weka_Segmentation.trainClassifier");  // required for saving
     call("trainableSegmentation.Weka_Segmentation.saveClassifier", classifier);
     call("trainableSegmentation.Weka_Segmentation.saveData", data);
   }
