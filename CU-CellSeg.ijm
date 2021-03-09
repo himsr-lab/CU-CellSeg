@@ -90,7 +90,7 @@ batchMode = true;  // speed up processing by limiting visual output
 cellMatrixChannelsLength = cellMatrixChannels.length;
 targetNames = newArray("nu", "ce", "me", "cy");  // labels for classes and file output
 targetCounts = initializeArray(targetNames.length, 0);  // regions of interest counts
-versionString = "CU-CellSeg v1.0 (2021-03-04)";
+versionString = "CU-CellSeg v1.0 (2021-03-09)";
 
 /*
  *  Start
@@ -787,15 +787,9 @@ function projectStack(image, slices, channels, target)
   run("Make Substack...", "channels=" + v2p(list));  // stack matching channels
   renameImage("", "stack-" + target);
 
-  for (i = 0; i < channelMatches; ++i )
-  {
-    setSlice(i + 1);
-    normalizePixelValues();  // normalize for balanced projection results
-  }
-
   if ( channelMatches > 1 )
   {
-    run("Z Project...", "projection=[Max Intensity]");  // project stack to image
+    run("Z Project...", "projection=[Sum Slices]");  // project stack to image
     close("stack-*");  // close projection stack
   }
   renameImage("", output);
