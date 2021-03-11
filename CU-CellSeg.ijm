@@ -19,6 +19,7 @@
  *  Title:        CU-CellSeg
  *  Summary:      ImageJ2 macro for the cell segmentation of multi-channel images
  *
+ *  DOI:          https://doi.org/10.5281/zenodo.4599644
  *  URL:          https://github.com/christianrickert/CU-CellSeg/
  *
  *  Description:
