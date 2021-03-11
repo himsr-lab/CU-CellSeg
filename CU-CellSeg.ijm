@@ -17,7 +17,7 @@
  *                University of Colorado, Anschutz Medical Campus
  *
  *  Title:        CU-CellSeg
- *  Summary:      ImageJ2 macro for cell segmentation of multi-channel images
+ *  Summary:      ImageJ2 macro for the cell segmentation of multi-channel images
  *
  *  URL:          https://github.com/christianrickert/CU-CellSeg/
  *
@@ -90,7 +90,7 @@ batchMode = true;  // speed up processing by limiting visual output
 cellMatrixChannelsLength = cellMatrixChannels.length;
 targetNames = newArray("nu", "ce", "me", "cy");  // labels for classes and file output
 targetCounts = initializeArray(targetNames.length, 0);  // regions of interest counts
-versionString = "CU-CellSeg v0.9 (2021-03-10)";
+versionString = "CU-CellSeg v0.9 (2021-03-11)";
 
 /*
  *  Start
