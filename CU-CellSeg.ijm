@@ -303,9 +303,11 @@ function createCompartments(target, counts)
   print("\tMembrane width: " + membraneWidth + " " + unit);
   print("\tNuclei contraction: " + nucleiContraction + " " + unit);
 
+  cellArea = 0.0;  // area in pixel²
   cellMatrixContraction = -cellMatrixContraction;
   membraneWidth = -membraneWidth;
   nucleiContraction = -nucleiContraction;
+  nucleusArea = 0.0;
 
   last = counts[0] + counts[1] - 1;
   for (i = last; i >= 0; --i )  // iterate through cells and nuclei in reverse order
@@ -317,6 +319,9 @@ function createCompartments(target, counts)
         getResizedSelection(i, nucleiContraction, unit);
         roiManager("update");  // resized nucleus
       }
+      else
+        roiManager("select", i);
+      nucleusArea = getValue("Area raw");
     }
     else  // cells
     {
@@ -325,33 +330,40 @@ function createCompartments(target, counts)
         getResizedSelection(i, cellMatrixContraction, unit);
         roiManager("update");  // resized cell
       }
-      if ( membraneWidth < 0 )
+      else
+        roiManager("select", i);
+      cellArea = getValue("Area raw");
+
+      if ( cellArea > nucleusArea )
       {
-        getResizedSelection(i, membraneWidth, unit);
-        roiManager("add");  // shrunk cell
-        p = getLastRegionIndex();  // get an index pointer
-        roiManager("select", p);
-        RoiManager.setGroup(5);
         n = i + 1;  // nucleus
-        if ( addRemainderRegion(i, newArray(n, p)) )  // cell minus nucleus and shrunk cell
+        regionID = getRegionID(n);
+        if ( membraneWidth < 0 )
         {
-          regionID = getRegionID(n);
-          renameRegion(++p, regionID + "_me");  // membrane
-          RoiManager.setGroup(3);
-          if ( addRemainderRegion(i, newArray(n, p)) )  // cell minus nucleus and membrane
+          getResizedSelection(i, membraneWidth, unit);
+          roiManager("add");  // shrunk cell
+          p = getLastRegionIndex();  // get an index pointer
+          roiManager("select", p);
+          RoiManager.setGroup(5);
+          if ( addRemainderRegion(i, newArray(n, p)) )  // cell minus nucleus and shrunk cell
           {
-            renameRegion(++p, regionID + "_cy"); // reduced cytoplasm
-            RoiManager.setGroup(4);
+            renameRegion(++p, regionID + "_me");  // membrane
+            RoiManager.setGroup(3);
+            if ( addRemainderRegion(i, newArray(n, p)) )  // cell minus nucleus and membrane
+            {
+              renameRegion(++p, regionID + "_cy"); // reduced cytoplasm
+              RoiManager.setGroup(4);
+            }
           }
         }
-      }
-      else  // no membrane requested
-      {
-        if ( addRemainderRegion(i, newArray(j)) )  // cell minus nucleus
+        else  // no membrane requested
         {
-          p = getLastRegionIndex();
-          renameRegion(p, regionID + "_cy"); // full cytoplasm
-          RoiManager.setGroup(4);
+          if ( addRemainderRegion(i, newArray(toString(n))) )  // cell minus nucleus
+          {
+            p = getLastRegionIndex();
+            renameRegion(p, regionID + "_cy"); // full cytoplasm
+            RoiManager.setGroup(4);
+          }
         }
       }
     }
@@ -895,9 +907,9 @@ function renderCellsImage(image)
   if ( batchMode )
     run("RGB Color");
   colorGroup(2, 255, 0, 0);  // cells, red (should not be visible)
-  colorGroup(1, 207, 184, 124);  // nuclei, gold
   colorGroup(3, 255, 255, 255);  // membranes, white
   colorGroup(4, 127, 127, 127);  // cytoplasm, gray
+  colorGroup(1, 207, 184, 124);  // nuclei, gold
   return output;
 }
 
