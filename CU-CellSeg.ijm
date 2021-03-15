@@ -91,7 +91,7 @@ batchMode = true;  // speed up processing by limiting visual output
 cellMatrixChannelsLength = cellMatrixChannels.length;
 targetNames = newArray("nu", "ce", "me", "cy");  // labels for classes and file output
 targetCounts = initializeArray(targetNames.length, 0);  // regions of interest counts
-versionString = "CU-CellSeg v0.9 (2021-03-13)";
+versionString = "CU-CellSeg v0.9 (2021-03-15)";
 
 /*
  *  Start
@@ -102,6 +102,7 @@ requires("1.53e");  // minimum ImageJ version
 run("ROI Manager...");  // start before batch mode
 run("Roi Defaults...", "color=red stroke=0 group=0");
 roiManager("UseNames", "true");  // use ROI names as labels
+run("Options...", "edm=16-bit");  // access larger distances
 run("Brightness/Contrast...");  // start for user convenience
 file = File.openDialog("Select the first TIFF of your dataset");
 processFolder(file, suffixes, userThresholds);
@@ -383,9 +384,9 @@ function createDistanceMap(image)
   selectWindow(image);
   run("Duplicate...", "title=tmp");
   setOption("ScaleConversions", true);
-  run("8-bit");
+  run("8-bit");  // required for EDM function call
   run("Invert");  // EDM works with black particles on white background
-  run("Distance Map");  // 8-bit (0-255)
+  run("Distance Map");  // creates separate distance map, see Binary Options
   renameImage("", output);
   getRawStatistics(nPixels, mean, min, max);  // from slice, not stack
   print("\tNuclei distances: " + min / toPixels + " " + pixelCalibration[0] + " (min), "
