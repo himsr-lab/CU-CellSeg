@@ -240,11 +240,12 @@ function clearAllSelections()
 }
 
 // Function to color a selection group
-function colorGroup(index, red, gren, blue)
+function colorGroup(index, red, green, blue)
 {
-  setForegroundColor(red, gren, blue);
+  setForegroundColor(red, green, blue);
   RoiManager.selectGroup(index);
-  roiManager("Fill");
+  if ( RoiManager.selected() > 0 )
+    roiManager("Fill");
   clearAllSelections();
 }
 
