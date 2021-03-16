@@ -91,7 +91,7 @@ batchMode = true;  // speed up processing by limiting visual output
 cellMatrixChannelsLength = cellMatrixChannels.length;
 targetNames = newArray("nu", "ce", "me", "cy");  // labels for classes and file output
 targetCounts = initializeArray(targetNames.length, 0);  // regions of interest counts
-versionString = "CU-CellSeg v0.9 (2021-03-15)";
+versionString = "CU-CellSeg v0.9 (2021-03-16)";
 
 /*
  *  Start
@@ -313,6 +313,7 @@ function createCompartments(target, counts)
   last = counts[0] + counts[1] - 1;
   for (i = last; i >= 0; --i )  // iterate through cells and nuclei in reverse order
   {
+    roiManager("select", i);
     if ( i % 2 != 0 )  // nuclei
     {
       if ( nucleiContraction < 0 )
@@ -320,8 +321,6 @@ function createCompartments(target, counts)
         getResizedSelection(i, nucleiContraction, unit);
         roiManager("update");  // resized nucleus
       }
-      else
-        roiManager("select", i);
       nucleusArea = getValue("Area raw");
     }
     else  // cells
@@ -331,10 +330,7 @@ function createCompartments(target, counts)
         getResizedSelection(i, cellMatrixContraction, unit);
         roiManager("update");  // resized cell
       }
-      else
-        roiManager("select", i);
       cellArea = getValue("Area raw");
-
       if ( cellArea > nucleusArea )
       {
         n = i + 1;  // nucleus
