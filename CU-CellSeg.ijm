@@ -91,7 +91,7 @@ batchMode = true;  // speed up processing by limiting visual output
 cellMatrixChannelsLength = cellMatrixChannels.length;
 targetNames = newArray("nu", "ce", "me", "cy");  // labels for classes and file output
 targetCounts = initializeArray(targetNames.length, 0);  // regions of interest counts
-versionString = "CU-CellSeg v0.9 (2021-03-16)";
+versionString = "CU-CellSeg v0.9 (2021-03-22)";
 
 /*
  *  Start
@@ -823,7 +823,8 @@ function readImage(file)
   // we're using the same mechansim to try different combinations of labels with counts,
   // until we get a valid response from the Ext.getMetadataValue function.
   counting = "";  // metadata key count subsequential to key
-  metadataPrefixes = newArray("Name #", "PageName #");
+  metadataPrefixes = newArray("ChannelName #", "Information|Image|Channel|Name #",
+                              "Name #", "PageName #");
   metadataCounting = newArray("0", "01", "1");
   countingLength = metadataCounting.length;
   prefixesLength = metadataPrefixes.length;
@@ -859,9 +860,9 @@ function readImage(file)
     setSlice(k);
     if ( counting == "01" && k <= 9 )  // Polaris
       Ext.getMetadataValue(prefix + "0" + k, slice);
-    else  // MIBI, Vectra
+    else  // MIBI, Vectra, Zeiss
       Ext.getMetadataValue(prefix + (k + offset), slice);
-    if ( slice == 0 )
+    if ( slice == 0 )  // no compatible metadata label found
       slice = k;
     setMetadata("Label", slice);  // add label to slice
     slices = Array.concat(slices, slice);
