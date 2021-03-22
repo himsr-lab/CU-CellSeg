@@ -83,7 +83,7 @@ nucleiChannels = newArray("dapi", "dsdna");  // mandatory, nuclei channels
 cellExpansion = 1.5;  // minimum cell radius [units] from closest nucleus
 cellExpansionLimit = 100.0;  // maximum cell radius [units] from closest nucleus
 cellMatrixContraction = 0.0;  // cellular matrix masks contraction [units]
-membraneWidth = 1.0;  //  membrane width [units] inside the cell outline
+membraneWidth = 0.0;  //  membrane width [units] inside the cell outline
 nucleiContraction = 0.0;  // nuclei masks contraction [units]
 
 // advanced user settings
@@ -344,11 +344,11 @@ function createCompartments(target, counts)
           RoiManager.setGroup(5);
           if ( addRemainderRegion(i, newArray(n, p)) )  // cell minus nucleus and shrunk cell
           {
-            renameRegion(++p, regionID + "_me");  // membrane
+            renameRegion(++p, regionID + "_me");  // calculated membrane
             RoiManager.setGroup(3);
             if ( addRemainderRegion(i, newArray(n, p)) )  // cell minus nucleus and membrane
             {
-              renameRegion(++p, regionID + "_cy"); // reduced cytoplasm
+              renameRegion(++p, regionID + "_cy"); // remaining cytoplasm
               RoiManager.setGroup(4);
             }
           }
@@ -358,8 +358,8 @@ function createCompartments(target, counts)
           if ( addRemainderRegion(i, newArray(toString(n))) )  // cell minus nucleus
           {
             p = getLastRegionIndex();
-            renameRegion(p, regionID + "_cy"); // full cytoplasm
-            RoiManager.setGroup(4);
+            renameRegion(p, regionID + "_cm"); // cellular matrix
+            RoiManager.setGroup(3);
           }
         }
       }
