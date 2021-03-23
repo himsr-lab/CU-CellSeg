@@ -91,7 +91,7 @@ batchMode = true;  // speed up processing by limiting visual output
 cellMatrixChannelsLength = cellMatrixChannels.length;
 targetNames = newArray("nu", "ce", "me", "cy");  // labels for classes and file output
 targetCounts = initializeArray(targetNames.length, 0);  // regions of interest counts
-versionString = "CU-CellSeg v0.9 (2021-03-22)";
+versionString = "CU-CellSeg v0.91 (2021-03-23)";
 
 /*
  *  Start
@@ -344,11 +344,11 @@ function createCompartments(target, counts)
           RoiManager.setGroup(5);
           if ( addRemainderRegion(i, newArray(n, p)) )  // cell minus nucleus and shrunk cell
           {
-            renameRegion(++p, regionID + "_me");  // calculated membrane
+            renameRegion(++p, regionID + ":me");  // calculated membrane
             RoiManager.setGroup(3);
             if ( addRemainderRegion(i, newArray(n, p)) )  // cell minus nucleus and membrane
             {
-              renameRegion(++p, regionID + "_cy"); // remaining cytoplasm
+              renameRegion(++p, regionID + ":cy"); // remaining cytoplasm
               RoiManager.setGroup(4);
             }
           }
@@ -358,7 +358,7 @@ function createCompartments(target, counts)
           if ( addRemainderRegion(i, newArray(toString(n))) )  // cell minus nucleus
           {
             p = getLastRegionIndex();
-            renameRegion(p, regionID + "_cm"); // cellular matrix
+            renameRegion(p, regionID + ":cm"); // cellular matrix
             RoiManager.setGroup(3);
           }
         }
@@ -527,7 +527,7 @@ function getRegionID(index)
 {
   roiManager("select", index);
   regionName = Roi.getName();
-  delimiterIndex = indexOf(regionName, "_");
+  delimiterIndex = indexOf(regionName, ":");
   regionID = substring(regionName, 0, delimiterIndex);  // get region id from name
   return regionID;
 }
@@ -659,10 +659,10 @@ function matchNucleiWithCells(target, counts)
           if ( overlap ) // full overlap
           {
             regionID = toString(n + 1);  // avoid "NaN" error with preceeding numeric value
-            renameRegion(n, regionID + "_nu");
+            renameRegion(n, regionID + ":nu");
             RoiManager.setGroup(1);  // nucleus, paired with cell
             found = true;
-            renameRegion(i, regionID + "_ce");
+            renameRegion(i, regionID + ":ce");
             RoiManager.setGroup(2);  // cell, matched with nucleus
             matched[c] = true;
           }
