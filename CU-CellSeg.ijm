@@ -75,8 +75,7 @@ nucleiFilling = false;  // fills nuclei with dark centers white before final det
 userThresholds = newArray(false, 0.75, 1e30, (0.75 * 32767), 1e30);  // default values
 
 // pixel classifier settings
-addTrainingFeatures = false;  // include additional training features for nuclei and cells
-cellMatrixChannels = newArray(0);  // optional, cell matrix channels: "beta-tubulin", "autofluo"
+cellMatrixChannels = newArray(0);  // optional, cell matrix channels
 nucleiChannels = newArray("dapi", "dsdna");  // mandatory, nuclei channels
 
 // cellular compartment settings
@@ -91,7 +90,7 @@ batchMode = true;  // speed up processing by limiting visual output
 cellMatrixChannelsLength = cellMatrixChannels.length;
 targetNames = newArray("nu", "ce", "me", "cy");  // labels for classes and file output
 targetCounts = initializeArray(targetNames.length, 0);  // regions of interest counts
-versionString = "CU-CellSeg v0.91 (2021-03-23)";
+versionString = "CU-CellSeg v0.92 (2021-03-27)";
 
 /*
  *  Start
@@ -805,6 +804,7 @@ function projectStack(image, slices, channels, target)
       setSlice(i + 1);
       normalizePixelValues();  // normalize for stable projection results
     }
+
     run("Z Project...", "projection=[Sum Slices]");  // project stack to image
     close("stack-*");  // close projection stack
   }
@@ -984,21 +984,17 @@ function runWekaClassifier(image, target, path)
             "assign these to their respective classes.\n" +
             "Train the classifier to update results.\n \n" +
             "Check results before closing this dialog!";
-
   run("Trainable Weka Segmentation");  // start the Trainable Weka Segmentatio plugin
   waitForWindow("Trainable Weka Segmentation");  // title contains changing version number
+  call("trainableSegmentation.Weka_Segmentation.setFeature", "Entropy=true");
+  call("trainableSegmentation.Weka_Segmentation.setFeature", "Gabor=true");
+  call("trainableSegmentation.Weka_Segmentation.setFeature", "Hessian=false");
+  call("trainableSegmentation.Weka_Segmentation.setFeature", "Kuwahara=true");
+  call("trainableSegmentation.Weka_Segmentation.setFeature", "Membrane_projections=false");
   if ( target == targetNames[0] )
-  {
-    if ( addTrainingFeatures )  // for densely packed nuclei
-      call("trainableSegmentation.Weka_Segmentation.setFeature", "Gabor=true");
     call("trainableSegmentation.Weka_Segmentation.changeClassName", "0", "nuclei");
-  }
   else if ( target == targetNames[1] )
-  {
-    if ( addTrainingFeatures )  // for sparsely spread membranes
-      call("trainableSegmentation.Weka_Segmentation.setFeature", "Kuwahara=true");
     call("trainableSegmentation.Weka_Segmentation.changeClassName", "0", "cellular matrix");
-  }
   call("trainableSegmentation.Weka_Segmentation.changeClassName", "1", "uncertain");
   call("trainableSegmentation.Weka_Segmentation.createNewClass", "background");
   if ( !File.exists(classifier) )  // classifier missing in folder
