@@ -777,8 +777,8 @@ function projectStack(image, slices, channels, target)
 
     for (j = 0; j < channelsLength; ++j)  // match slice names with channels
     {
-      slice = toLowerCase(slices[i - 1] + " ");  // label pattern: "name (channel/mass)"
-      if ( slice.contains(toLowerCase(channels[j])) )
+      slice = toLowerCase(slices[i - 1]);  // label pattern: "name (channel/mass)"
+      if ( slice.contains(toLowerCase(channels[j])  + " ") )  // matching pattern: "name "
       {
         if ( list.length > 0 )  // append slices
           list = list + ",";
