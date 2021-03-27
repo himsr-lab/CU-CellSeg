@@ -88,7 +88,7 @@ nucleiContraction = 0.0;  // nuclei masks contraction [units]
 // advanced user settings
 batchMode = true;  // speed up processing by limiting visual output
 cellMatrixChannelsLength = cellMatrixChannels.length;
-targetNames = newArray("nu", "ce", "me", "cy");  // labels for classes and file output
+targetNames = newArray("nu", "ce", "me", "cy", "cm");  // labels for classes and file output
 targetCounts = initializeArray(targetNames.length, 0);  // regions of interest counts
 versionString = "CU-CellSeg v0.92 (2021-03-27)";
 
@@ -333,7 +333,7 @@ function createCompartments(target, counts)
       if ( cellArea > nucleusArea )
       {
         n = i + 1;  // nucleus
-        regionID = getRegionID(n);
+        regionID = getRegionID(n) + ":";
         if ( membraneWidth < 0 )
         {
           getResizedSelection(i, membraneWidth, unit);
@@ -343,11 +343,11 @@ function createCompartments(target, counts)
           RoiManager.setGroup(5);
           if ( addRemainderRegion(i, newArray(n, p)) )  // cell minus nucleus and shrunk cell
           {
-            renameRegion(++p, regionID + ":me");  // calculated membrane
+            renameRegion(++p, regionID + targetNames[2]);  // calculated membrane
             RoiManager.setGroup(3);
             if ( addRemainderRegion(i, newArray(n, p)) )  // cell minus nucleus and membrane
             {
-              renameRegion(++p, regionID + ":cy"); // remaining cytoplasm
+              renameRegion(++p, regionID + targetNames[3]); // remaining cytoplasm
               RoiManager.setGroup(4);
             }
           }
@@ -357,7 +357,7 @@ function createCompartments(target, counts)
           if ( addRemainderRegion(i, newArray(toString(n))) )  // cell minus nucleus
           {
             p = getLastRegionIndex();
-            renameRegion(p, regionID + ":cm"); // cellular matrix
+            renameRegion(p, regionID + targetNames[4]); // cellular matrix
             RoiManager.setGroup(3);
           }
         }
@@ -657,11 +657,11 @@ function matchNucleiWithCells(target, counts)
 
           if ( overlap ) // full overlap
           {
-            regionID = toString(n + 1);  // avoid "NaN" error with preceeding numeric value
-            renameRegion(n, regionID + ":nu");
+            regionID = toString(n + 1) + ":";  // avoid "NaN" error with preceeding numeric value
+            renameRegion(n, regionID + targetNames[0]);
             RoiManager.setGroup(1);  // nucleus, paired with cell
             found = true;
-            renameRegion(i, regionID + ":ce");
+            renameRegion(i, regionID + targetNames[1]);
             RoiManager.setGroup(2);  // cell, matched with nucleus
             matched[c] = true;
           }
