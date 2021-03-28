@@ -371,16 +371,25 @@ function createCompartments(target, counts)
   deleteGroupRegions(5);
   roiManager("sort");  // new regions are sorted by creation time
   showStatus("");  // clear and free status message
-  RoiManager.selectGroup(3);
+  RoiManager.selectGroup(3);  // cellular matrix or membranes
   counts[2] = RoiManager.selected();
-  RoiManager.selectGroup(4);
+  RoiManager.selectGroup(4);  // cytoplasm
   counts[3] = RoiManager.selected();
   roiManager("show none");
   clearAllSelections();
-  print("\tCounts: " + counts[0] + " (" + target[0] + "), "
-                     + counts[1] + " (" + target[1] + "), "
-                     + counts[2] + " (" + target[2] + "), "
-                     + counts[3] + " (" + target[3] + ")");
+  if ( membraneWidth < 0 )
+  {
+    print("\tCounts: " + counts[0] + " (" + target[0] + "), "
+                       + counts[1] + " (" + target[1] + "), "
+                       + counts[2] + " (" + target[2] + "), "
+                       + counts[3] + " (" + target[3] + ")");
+  }
+  else
+  {
+    print("\tCounts: " + counts[0] + " (" + target[0] + "), "
+                       + counts[1] + " (" + target[1] + "), "
+                       + counts[2] + " (" + target[4] + ")");
+  }
 }
 
 // Function to create an Euklidian distance map from segmented particles
@@ -905,7 +914,7 @@ function renderCellsImage(image)
   if ( batchMode )
     run("RGB Color");
   colorGroup(2, 255, 0, 0);  // cells, red (should not be visible)
-  colorGroup(3, 255, 255, 255);  // membranes, white
+  colorGroup(3, 255, 255, 255);  // cellular matrix or membranes, white
   colorGroup(4, 127, 127, 127);  // cytoplasm, gray
   colorGroup(1, 207, 184, 124);  // nuclei, gold
   return output;
