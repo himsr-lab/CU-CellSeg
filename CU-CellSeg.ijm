@@ -333,7 +333,7 @@ function createCompartments(target, counts)
       if ( cellArea > nucleusArea )
       {
         n = i + 1;  // nucleus
-        regionID = getRegionID(n) + ":";
+        regionID = getRegionID(n);
         if ( membraneWidth < 0 )
         {
           getResizedSelection(i, membraneWidth, unit);
@@ -527,7 +527,7 @@ function getRegionID(index)
   roiManager("select", index);
   regionName = Roi.getName();
   delimiterIndex = indexOf(regionName, ":");
-  regionID = substring(regionName, 0, delimiterIndex);  // get region id from name
+  regionID = substring(regionName, 0, delimiterIndex + 1);  // region id with delimiter
   return regionID;
 }
 
