@@ -295,9 +295,9 @@ function createCompartments(target, counts)
   // the subtraction yields no selectable region (no pixels left), the following
   // steps are skipped. If the nuclei or the cell contraction fails, an object
   // identical to the original is returned - so this will never remove regions.
-  print("\n*** Creating membranes and cytoplasm ***");
+  print("\n*** Creating cellular compartments ***");
   print("\tThis might take a while...");
-  showStatus("!Creating membranes and cytoplasm...");  // display and protect status message
+  showStatus("!Creating cellular compartments...");  // display and protect status message
   unit = pixelCalibration[0];
   print("\tCell contraction: " + cellMatrixContraction + " " + unit);
   print("\tMembrane width: " + membraneWidth + " " + unit);
