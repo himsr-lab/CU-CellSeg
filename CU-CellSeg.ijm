@@ -90,7 +90,7 @@ batchMode = true;  // speed up processing by limiting visual output
 cellMatrixChannelsLength = cellMatrixChannels.length;
 targetNames = newArray("nu", "ce", "me", "cy", "cm");  // labels for classes and file output
 targetCounts = initializeArray(targetNames.length, 0);  // regions of interest counts
-versionString = "CU-CellSeg v0.92 (2021-03-30)";
+versionString = "CU-CellSeg v0.92 (2021-04-01)";
 
 /*
  *  Start
@@ -997,7 +997,6 @@ function runWekaClassifier(image, target, path)
   waitForWindow("Trainable Weka Segmentation");  // title contains changing version number
   call("trainableSegmentation.Weka_Segmentation.setFeature", "Difference_of_gaussians=true");
   call("trainableSegmentation.Weka_Segmentation.setFeature", "Entropy=true");
-  call("trainableSegmentation.Weka_Segmentation.setFeature", "Gabor=true");
   call("trainableSegmentation.Weka_Segmentation.setFeature", "Gaussian_blur=true");
   call("trainableSegmentation.Weka_Segmentation.setFeature", "Hessian=false");
   call("trainableSegmentation.Weka_Segmentation.setFeature", "Kuwahara=true");
