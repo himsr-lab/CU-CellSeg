@@ -144,10 +144,10 @@ function processFile(file, thresholds)
 
   // get calibration data from image file
   pixelCalibration = getPixelCalibration();
-  if ( pixelCalibration[0] != "pixel" )  // calculate conversion factor
-    toPixels = Math.round(1.0 / 0.5 * (pixelCalibration[1] + pixelCalibration[2]));
-  else  // no conversion required
+  if ( pixelCalibration[0] == "pixels" )  // no conversion required
     toPixels = 1.0;
+  else  // calculate conversion factor
+    toPixels = Math.round(1.0 / 0.5 * (pixelCalibration[1] + pixelCalibration[2]));
   print("\t Calibration: " + toPixels + " pixel per " + pixelCalibration[0]);
 
   // create projections for nuclei and cellular matrix
