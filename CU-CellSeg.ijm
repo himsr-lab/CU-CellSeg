@@ -555,10 +555,11 @@ function getResizedSelection(index, value, unit)
 function getUserThresholds(target, thresholds)
 {
   title =   "Thresholds limits";
-  message = "Set your limits in the 'Threshold' window and\n" +
-            "fully cover the background with the blue mask,\n" +
-            "while leaving the white [" + target + "] unmasked!\n \n" +
-            "Close this dialog to confirm the thresholds...";
+  message = "Set the limits in the Threshold window and\n" +
+            "cover the background with the blue mask:\n" +
+            "Leave the white target regions unmasked.\n \n" +
+            "The macro will apply the new thresholds,\n" +
+            "when you close this dialog to continue...";
 
   toggleBatchMode(batchMode, true);  // stay in batch mode, but show current image
   run("Threshold...");
@@ -795,23 +796,17 @@ function projectStack(image, slices, channels, target)
 
   }
 
-  if ( channelMatches == 0 )  // select all channels
+  if ( channelMatches <= 1 )  // copy slice from stack
   {
-    channelMatches = slicesLength;
-    stackSelection = "1-" + slicesLength;
-  }
-  else if ( channelMatches == 1 )  // copy slice from stack
-  {
-    setSlice(stackSelection);
+    if ( channelMatches == 1 )  // select matching channel
+      setSlice(stackSelection);
     run("Duplicate...", "title=slice-" + target);
   }
-  if ( channelMatches > 1 ) // stack matching channels
+  else if ( channelMatches >= 2 ) // stack matching channels
   {
     run("Make Substack...", "channels=" + v2p(stackSelection));
     renameImage("", "stack-" + target);
 
-  if ( channelMatches > 1 )
-  {
     for (i = 0; i < channelMatches; ++i)
     {
       setSlice(i + 1);
@@ -882,7 +877,8 @@ function readImage(file)
     print("\t" + k + ".) " + slice);
   }
 
-  run("Maximize");  // window pane
+  setSlice(1);  // show first slice
+  run("Maximize");  // maximize window pane
   return slices;
 }
 
@@ -993,10 +989,11 @@ function runWekaClassifier(image, target, path)
   classifier = path + target +".model";
   data = path + target +".arff";
   title =   "Classifier training";
-  message = "Draw selections in the 'Weka' window and\n" +
-            "assign these to their respective classes.\n" +
-            "Train the classifier to update results.\n \n" +
-            "Check results before closing this dialog!";
+  message = "Draw selections in the Weka window and\n" +
+            "assign these to their respective classes:\n" +
+            "Train the classifier to update the results.\n \n" +
+            "The macro will save the new classifier,\n" +
+            "when you close this dialog to continue...";
   run("Trainable Weka Segmentation");  // start the Trainable Weka Segmentatio plugin
   waitForWindow("Trainable Weka Segmentation");  // title contains changing version number
   call("trainableSegmentation.Weka_Segmentation.setFeature", "Difference_of_gaussians=true");
