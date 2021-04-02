@@ -765,19 +765,15 @@ function printDateTimeStamp()
 function projectStack(image, slices, channels, target)
 {
   // The slices used for the projection are identified by matching the slice labels
-  // with the user-defined channel list. We're then creating a substack including
-  // only the user-defined channels and normalize each slice by its median value.
-  // In doing so, we use comparable pixel intensities in the next step:
-  // The projection merges the stack into a single image by comparing the maximum
-  // intensities across all channels and preserving the global maximum only.
-  // In our tests, we could see a better shape-conservation in the resulting
-  // projections than, for example, with a projection using average values.
+  // with the user-defined channel list. We're then creating a copy of the user-defined
+  // channel or a projection of the list user-defined channels. Before the projection,
+  // each slice is normalized by its median value to balance all pixel intensities.
   print("\n*** Projecting " + target + " image ***");
   output = target + "->proj";
   channelsLength = channels.length;
   channelMatches = 0;
   slicesLength = slices.length;
-  list = "";
+  stackSelection = "";
 
   selectWindow(image);
 
@@ -786,12 +782,13 @@ function projectStack(image, slices, channels, target)
 
     for (j = 0; j < channelsLength; ++j)  // match slice names with channels
     {
-      slice = toLowerCase(slices[i - 1]);  // label pattern: "name (channel/mass)"
-      if ( slice.contains(toLowerCase(channels[j])  + " ") )  // matching pattern: "name "
+      slice = toLowerCase(slices[i - 1]);  // label pattern: "#" or "name (channel/mass)"
+      if ( slice == channels[j] ||
+          slice.contains(toLowerCase(channels[j])  + " ") )  // matching pattern: "name "
       {
-        if ( list.length > 0 )  // append slices
-          list = list + ",";
-        list = list + toString(i);
+        if ( stackSelection.length > 0 )  // append slices
+          stackSelection = stackSelection + ",";
+        stackSelection = stackSelection + toString(i);
         channelMatches += 1;
       }
     }
@@ -801,24 +798,31 @@ function projectStack(image, slices, channels, target)
   if ( channelMatches == 0 )  // select all channels
   {
     channelMatches = slicesLength;
-    list = "1-" + slicesLength;
+    stackSelection = "1-" + slicesLength;
   }
-  run("Make Substack...", "channels=" + v2p(list));  // stack matching channels
-  renameImage("", "stack-" + target);
+  else if ( channelMatches == 1 )  // copy slice from stack
+  {
+    setSlice(stackSelection);
+    run("Duplicate...", "title=slice-" + target);
+  }
+  if ( channelMatches > 1 ) // stack matching channels
+  {
+    run("Make Substack...", "channels=" + v2p(stackSelection));
+    renameImage("", "stack-" + target);
 
   if ( channelMatches > 1 )
   {
     for (i = 0; i < channelMatches; ++i)
     {
       setSlice(i + 1);
-      normalizePixelValues();  // normalize for stable projection results
+      normalizePixelValues();  // normalize for balanced projection results
     }
 
     run("Z Project...", "projection=[Sum Slices]");  // project stack to image
     close("stack-*");  // close projection stack
   }
   renameImage("", output);
-  print("\tChannels: \"" + list + "\" (" + target + ")");
+  print("\tChannels: \"" + stackSelection + "\" (" + target + ")");
   return output;
 }
 
@@ -872,9 +876,9 @@ function readImage(file)
     else  // MIBI, Vectra, Zeiss
       Ext.getMetadataValue(prefix + (k + offset), slice);
     if ( slice == 0 )  // no compatible metadata label found
-      slice = k;
+      slice = k;  // use number instead
     setMetadata("Label", slice);  // add label to slice
-    slices = Array.concat(slices, slice);
+    slices = Array.concat(slices, toString(slice));
     print("\t" + k + ".) " + slice);
   }
 
