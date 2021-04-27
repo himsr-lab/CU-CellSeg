@@ -13,7 +13,7 @@ In short, pixel probability maps for nucleus channels (mandatory) and cell matri
 **Figure 1: Segmentation example.** Detail from the center of the composite image (top). Left side: Grayscale dsDNA channel with nuclei outlines (blue). Right side: Grayscale beta-tubulin channel with cell matrix outlines (red).
 
 ### Software documentation
-The documentation of our macros is located in the corresponding source code: You can view the source code on GitHub by following the links to the macros.
+The documentation of our macros is in the corresponding source code: You can view the source code on GitHub by following the links to the macros.
 
 ### Software requirements
 CU-CellSeg requires a recent version of the [Fiji](https://fiji.sc/) image processing package:
@@ -25,7 +25,7 @@ Any multi-channel image that can be imported with the Bio-Formats plugin can be 
 
 ### Example files
 The [example folder](https://github.com/christianrickert/CU-CellSeg/tree/main/example) contains a single [MIBIscope™ image](https://github.com/christianrickert/CU-CellSeg/blob/main/example/20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil.tiff?raw=true) (800x800 px) and two corresponding pixel-classifier models - trained with dsDNA ([nu.model](https://github.com/christianrickert/CU-CellSeg/blob/main/example/nu.model?raw=true)) and beta-tubulin ([ce.model](https://github.com/christianrickert/CU-CellSeg/blob/main/example/ce.model?raw=true)), respectively.
-Running CU-CellSeg with with the default [`userThresholds`](https://github.com/christianrickert/CU-CellSeg/blob/639e2b154d8455282ee769e337859a0713fe247f/CU-CellSeg.ijm#L75) and with the [`cellMatrixChannels`](https://github.com/christianrickert/CU-CellSeg/blob/639e2b154d8455282ee769e337859a0713fe247f/CU-CellSeg.ijm#L78) variable set to `newArray("beta-tubulin")`, should yield results identical to the data in the [results subfolder](https://github.com/christianrickert/CU-CellSeg/tree/main/example/20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil). However, the measurements table (400 MiB) has been compressed with 7-zip before uploading.
+Running CU-CellSeg with the default [`userThresholds`](https://github.com/christianrickert/CU-CellSeg/blob/639e2b154d8455282ee769e337859a0713fe247f/CU-CellSeg.ijm#L75) and with the [`cellMatrixChannels`](https://github.com/christianrickert/CU-CellSeg/blob/639e2b154d8455282ee769e337859a0713fe247f/CU-CellSeg.ijm#L78) variable set to `newArray("beta-tubulin")`, should yield results identical to the data in the [results subfolder](https://github.com/christianrickert/CU-CellSeg/tree/main/example/20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil). However, the measurements table (400 MiB) has been compressed with 7-zip before uploading.
 CU-CellSeg produces distinct result files for every multi-channel image in the batch:
 * `*.csv` - [measurements table](https://github.com/christianrickert/CU-CellSeg/blob/main/example/20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil/20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil.7z?raw=true)
 * `*.tif` - [overview image](https://github.com/christianrickert/CU-CellSeg/blob/main/example/20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil/20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil.tif?raw=true)
