@@ -1,5 +1,4 @@
-![header](https://user-images.githubusercontent.com/19319377/116176053-b2e8b100-a6ce-11eb-874a-d2bc5a48bd5e.png)
-
+![header](https://user-images.githubusercontent.com/19319377/116188917-678dcd00-a6e5-11eb-91ca-9f0418843dff.png)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4599644.svg)](https://doi.org/10.5281/zenodo.4599644)
 # CU-CellSeg
 ## ImageJ2 macro for the cell segmentation of multi-channel images
