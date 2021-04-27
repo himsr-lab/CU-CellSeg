@@ -21,5 +21,9 @@ The documentation of our macros is located in the corresponding source code: You
   * Bio-Formats (>= 6.6.0)
   * Trainable Weka Segmentation Plugin (>= 3.2.34)
 
+### Example files
+The example folder contains a single [MIBIscope™ image (800x800 px)](https://mibi-share.ionpath.com/tracker/overlay/sets/16/116) and two pixel-classifier models - trained with dsDNA (nuclei) and beta-tubulin (cell matrix), respectively.
+Running CU-CellSeg with with the default [threshold](https://github.com/christianrickert/CU-CellSeg/blob/639e2b154d8455282ee769e337859a0713fe247f/CU-CellSeg.ijm#L75) values of `0.75` and with the [cellMatrixChannels](https://github.com/christianrickert/CU-CellSeg/blob/639e2b154d8455282ee769e337859a0713fe247f/CU-CellSeg.ijm#L78) variable set to `newArray("beta-tubulin)`, should yield results identical to the data in the subfolder.
+
 ### Copyright notices
-The [MIBIscope™ image](https://mibi-share.ionpath.com/tracker/overlay/sets/16/116) was kindly provided by Ionpath.
+The example image was kindly provided by Ionpath.
