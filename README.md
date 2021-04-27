@@ -22,8 +22,8 @@ The documentation of our macros is located in the corresponding source code: You
   * Trainable Weka Segmentation Plugin (>= 3.2.34)
 
 ### Example files
-The example folder contains a single [MIBIscope™ image (800x800 px)](https://mibi-share.ionpath.com/tracker/overlay/sets/16/116) and two pixel-classifier models - trained with dsDNA (nuclei) and beta-tubulin (cell matrix), respectively.
-Running CU-CellSeg with with the default [threshold](https://github.com/christianrickert/CU-CellSeg/blob/639e2b154d8455282ee769e337859a0713fe247f/CU-CellSeg.ijm#L75) values of `0.75` and with the [cellMatrixChannels](https://github.com/christianrickert/CU-CellSeg/blob/639e2b154d8455282ee769e337859a0713fe247f/CU-CellSeg.ijm#L78) variable set to `newArray("beta-tubulin)`, should yield results identical to the data in the subfolder.
+The [example folder](https://github.com/christianrickert/CU-CellSeg/tree/main/example) contains a single MIBIscope™ image (800x800 px) and two pixel-classifier models - trained with dsDNA (nuclei) and beta-tubulin (cell matrix), respectively.
+Running CU-CellSeg with with the default [userThresholds](https://github.com/christianrickert/CU-CellSeg/blob/639e2b154d8455282ee769e337859a0713fe247f/CU-CellSeg.ijm#L75) and with the [cellMatrixChannels](https://github.com/christianrickert/CU-CellSeg/blob/639e2b154d8455282ee769e337859a0713fe247f/CU-CellSeg.ijm#L78) variable set to `newArray("beta-tubulin")`, should yield results identical to the data in the [results subfolder](https://github.com/christianrickert/CU-CellSeg/tree/main/example/20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil).
 
 ### Copyright notices
-The example image was kindly provided by Ionpath.
+The [MIBIscope™ image](https://mibi-share.ionpath.com/tracker/overlay/sets/16/116) was kindly provided by Ionpath.
