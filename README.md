@@ -9,6 +9,7 @@ The CU-CellSeg macro implements a "classic" segmentation approach: In short, pro
 
 ![nuclei (dsDNA)](https://user-images.githubusercontent.com/19319377/116169607-567f9480-a6c2-11eb-88f1-21695bf49529.png)
 ![cytoplasm (beta-tubulin)](https://user-images.githubusercontent.com/19319377/116169628-65fedd80-a6c2-11eb-9a54-5cc4cf1e66e2.png)
+
 Figure 1: Segmentation example. Detail from the center of the header composite image. Left side: Grayscale dsDNA channel with nuclei overlay (blue). Right side: Grayscale beta-tubulin channel with cell matrix overlay (red).
 
 ### Software documentation
