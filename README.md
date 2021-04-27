@@ -17,9 +17,9 @@ The documentation of our macros is located in the corresponding source code: You
 
 ### Software requirements
 * The CU-CellSeg macro requires a recent version of the [Fiji](https://fiji.sc/) image processing package.
-  * ImageJ2 (>= 1.53e)
-  * Bio-Formats (>= 6.6.0)
-  * Trainable Weka Segmentation Plugin (>= 3.2.34)
+  * ImageJ2 app (>= 1.53e)
+  * Bio-Formats plugin (>= 6.6.0)
+  * Trainable Weka Segmentation plugin (>= 3.2.34)
 
 ### Example files
 The [example folder](https://github.com/christianrickert/CU-CellSeg/tree/main/example) contains a single [MIBIscope™ image](https://github.com/christianrickert/CU-CellSeg/blob/main/example/20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil.tiff?raw=true) (800x800 px) and two corresponding pixel-classifier models - trained with dsDNA ([nu.model](https://github.com/christianrickert/CU-CellSeg/blob/main/example/nu.model?raw=true)) and beta-tubulin ([ce.model](https://github.com/christianrickert/CU-CellSeg/blob/main/example/ce.model?raw=true)), respectively.
