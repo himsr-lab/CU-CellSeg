@@ -1,6 +1,6 @@
 ![header](https://user-images.githubusercontent.com/19319377/116188917-678dcd00-a6e5-11eb-91ca-9f0418843dff.png)
 # CU-CellSeg
-## ImageJ2 macro for the cell segmentation of multi-channel images
+## Cell segmentation of multi-channel images
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4599644.svg)](https://doi.org/10.5281/zenodo.4599644)
 ### Segmentation method
 The CU-CellSeg macro implements a "classic" cell segmentation method with a marker-based cell expansion: In short, pixel probability maps for nucleus channels (mandatory) and cell matrix channels (optional) are thresholded and segmented by ImageJ's [watershed algorithm](https://imagej.nih.gov/ij/docs/guide/146-29.html#sub:Watershed) (nuclei) and by the ["Find maxima..." function](https://imagej.nih.gov/ij/docs/guide/146-29.html#sub:Find-Maxima) (cell matrix) to create individual cellular compartments. Typical nucleus channels would be markers for DAPI, dsDNA, or histone. Cell matrix channels could be cytoplasm markers (beta-tubulin, keratin, vimentin, ...) or membrane markers (V-ATPase, HLA class 1, CD8, ...), or both. If no cell matrix channel is specified (default), cell outlines are generated from the expansion of the nuclei outlines by a fixed radius. Both cell matrix options generate non-overlapping cell outlines.
