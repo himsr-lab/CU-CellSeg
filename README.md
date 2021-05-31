@@ -15,7 +15,6 @@ The documentation of our macros is in the corresponding source code: You can vie
 ### Software requirements
 CU-CellSeg requires a recent version of the [Fiji](https://fiji.sc/) image processing package:
 * ImageJ2 app (>= 1.52u)
-* Bio-Formats plugin (>= 6.4.0)
 * Trainable Weka Segmentation plugin (>= 3.2.24)
 
 Any multi-channel image that can be imported with the Bio-Formats plugin can be processed by CU-CellSeg. However, you might have to adjust the [`suffixes`](https://github.com/christianrickert/CU-CellSeg/blob/1469060902e4277354b93b9649c065e6e55826b2/CU-CellSeg.ijm#L69) variable to select the file extensions for your specific instrument. In addition, if the metadata extraction and therefore the slice labeling fails, you will have to refer to individual channels explicitly by slice number, e.g. `"1", "14"` instead of using the convenient pattern matching available for labeled channels, e.g. `"beta-tubulin", "dsdna"`.
