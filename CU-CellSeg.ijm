@@ -53,6 +53,11 @@
  *  CU-CellSeg will repeat the segmentation and the analysis using identical parameters
  *  for every file matching the file name pattern. However, result files from repeated
  *  runs with the same file are overwritten.
+ *
+ *  Dependencies:
+ *
+ *  CU-CellSeg requires a recent version of CU-MacroLibrary to be installed:
+ *  https://github.com/christianrickert/CU-MacroLibrary/
  */
 
 /*
@@ -90,14 +95,16 @@ batchMode = true;  // speed up processing by limiting visual output
 cellMatrixChannelsLength = cellMatrixChannels.length;
 targetNames = newArray("nu", "ce", "me", "cy", "cm");  // labels for classes and file output
 targetCounts = initializeArray(targetNames.length, 0);  // regions of interest counts
-versionString = "CU-CellSeg v1.00 (2021-05-04)";
+versionString = "CU-CellSeg v1.00 (2021-05-31)\n" +
+                 libraryVersion;
+
 
 /*
  *  Start
  */
 
 print("\\Clear");  // clear Log window
-requires("1.53e");  // minimum ImageJ version
+requires("1.52u");  // minimum ImageJ version
 run("ROI Manager...");  // start before batch mode
 run("Roi Defaults...", "color=red stroke=0 group=0");
 roiManager("UseNames", "true");  // use ROI names as labels
@@ -186,7 +193,7 @@ function processFile(file, thresholds)
 
   // save and clear run, free memory
   finalizeRun(filePath, fileName, renderedCells);
-  call("java.lang.System.gc");  // trigger JVM garbage collection
+  freeMemory();
 
   // restore user interface and display results
   toggleBatchMode(batchMode, false);
@@ -195,29 +202,6 @@ function processFile(file, thresholds)
 /*
  *  Functions
  */
-
-// Function to substract child regions from a parent region and add it to the ROI Manager
-function addRemainderRegion(parentRegion, childRegions)
-{
-  success = false;
-  childRegionsLength = childRegions.length;
-
-  roiManager("select", parentRegion);  // parent region
-
-  for (i = 0; i < childRegionsLength; ++i )  // child regions
-  {
-    setKeyDown("alt");  // simulate pressing the ALT key (down position)
-    roiManager("select", childRegions[i]);  // substract
-  }
-
-  setKeyDown("none");  // release all keys (up position)
-  if ( selectionType() != -1 )  // function returns -1 if there is no selection left
-  {
-    roiManager("add");
-    success = true;
-  }
-  return success;
-}
 
 // Function to classify images for more robust segmentation results
 function classifyImage(image, target, path)
@@ -229,23 +213,6 @@ function classifyImage(image, target, path)
   normalizePixelValues();  // normalize for stable classification results
   output = runWekaClassifier(image, target, path);
   return output;
-}
-
-// Function to remove all selections
-function clearAllSelections()
-{
-  roiManager("deselect");
-  run("Select None");
-}
-
-// Function to color a selection group
-function colorGroup(index, red, green, blue)
-{
-  setForegroundColor(red, green, blue);
-  RoiManager.selectGroup(index);
-  if ( RoiManager.selected() > 0 )
-    roiManager("Fill");
-  clearAllSelections();
 }
 
 // Function to combine the cellular matrix with the nuclei image
@@ -430,39 +397,6 @@ function createDistanceMask(image, contraction, limit)
   return output;
 }
 
-// Function to remove all regions of interest
-function deleteAllRegions()
-{
-  if ( roiManager("count") > 0 )
-  {
-    clearAllSelections();
-    roiManager("delete");
-  }
-}
-
-// Function to remove all regions of interest from a specific group
-function deleteGroupRegions(group)
-{
-  RoiManager.selectGroup(group);
-  if ( RoiManager.selected() > 0 )
-    roiManager("delete");
-}
-
-// Function to test if a string ends with suffixes from a list
-function endsWithEither(string, suffixes)
-{
-  suffixesLength = suffixes.length;
-  found = false;
-
-  for (i = 0; i < suffixesLength; ++i)
-  {
-    if ( endsWith(string, suffixes[i]) )
-      found = true;
-  }
-
-  return found;
-}
-
 // Function to finalize a segmentation run by saving all results
 function finalizeRun(path, name, image)
 {
@@ -499,37 +433,6 @@ function finalizeRun(path, name, image)
   saveLogFile(txtFile);
 }
 
-// Function to return the index of the last ROI Manager element
-function getLastRegionIndex()
-{
-  return roiManager("count") - 1;
-}
-
-// Function to calculate the Median pixel value
-function getMedian(min, max)
-{
-  updateDisplayRange(NaN, NaN);  // force pixel values update
-  if ( isNaN(min) || isNaN(max) )
-  {
-    getRawStatistics(nPixels, mean, min, max);
-    setThreshold(min, max);
-    output = getValue("Median raw limit");
-    resetThreshold();
-  }
-  else
-    output = getValue("Median raw");
-  return output;
-}
-
-// Function to get pixel calibration information
-function getPixelCalibration()
-{
-  output = newArray("unit", "unitsPerPixelWidth", "unitsPerPixelHeight", "pixelDimension");
-
-  getPixelSize(output[0], output[1], output[2], output[3]);
-  return output;
-}
-
 // Function to get id from region of interest name
 function getRegionID(index)
 {
@@ -538,17 +441,6 @@ function getRegionID(index)
   delimiterIndex = indexOf(regionName, ":");
   regionID = substring(regionName, 0, delimiterIndex + 1);  // region id with delimiter
   return regionID;
-}
-
-// Function to grow or shrink the current selection
-function getResizedSelection(index, value, unit)
-{
-  if ( unit == "pixel" )
-    pixel = " " + pixel;
-  else
-    pixel = "";
-  roiManager("select", index);
-  run("Enlarge...", "enlarge=" + v2p(value) + pixel);  // always returns a selection
 }
 
 // Function reads user-defined threshold values
@@ -572,24 +464,6 @@ function getUserThresholds(target, thresholds)
     getThreshold(thresholds[3], thresholds[4]);
   run("Close");
   toggleBatchMode(batchMode, true);  // hide image and (re-)enter batch mode
-}
-
-// Function initializes and returns an array with default values
-function initializeArray(counts, value)
-{
-  return Array.fill(newArray(counts), value);
-}
-
-// Function to initialize a new segmentation run by closing images and clearing the log
-function initializeRun()
-{
-  print("\\Clear");  // clear Log window
-  printDateTimeStamp();
-  print("ImageJ2 v" + IJ.getFullVersion);
-  print(versionString);
-  run("Close All");  // close all image windows
-  deleteAllRegions();  // remove all regions from ROI Manager
-  run("Clear Results");  // empty Results table
 }
 
 // Function to mask the cytoplasm image to limit cell expansion
@@ -732,36 +606,6 @@ function measureRegions(image)
   close(image);
 }
 
-// Function to normalize pixel intensities by their median value
-function normalizePixelValues()
-{
-  // The calculation of the median pixel value can be skewed by the abundance of a significant
-  // amount of pixels with a value of zero (background/non-information), i.e. synthetic images
-  // from the MIBI or filtered microscope images with large background areas and missing
-  // background information. We therefore temporarily blank the zero pixels in all images
-  // before performning the median calculation and the median-based normalization.
-  setOption("ScaleConversions", false);  // keep pixel values during conversion
-  run("32-bit");
-  changeValues(0.0, 0.0, NaN);  // convert zero background to NaN values
-  median = getMedian(NaN, NaN);
-  print("\tInitial median pixel value: " + median);  // rounded to value within 0.0001
-  if ( median > 0.0 && (Math.abs(1.0 - median) > 0.0001) )
-  {
-    run("Divide...", "value=" + v2p(median) + " slice");
-    print("\tUpdated median pixel value: " + getMedian(NaN, NaN));
-  }
-  changeValues(NaN, NaN, 0.0);  // revert NaN background to zero values
-}
-
-// Function to print date and time
-function printDateTimeStamp()
-{
-  getDateAndTime(year, month, dayOfWeek, dayOfMonth, hour, minute, second, msec);
-
-  print("\n[" + year + "-" + (month + 1)  + "-" + dayOfMonth + ", "
-              + hour + ":" + minute + ":" + second + "]");
-}
-
 // Function to create a projected image from an image stack
 function projectStack(image, slices, channels, target)
 {
@@ -821,84 +665,6 @@ function projectStack(image, slices, channels, target)
   return output;
 }
 
-// Function to read an image file with Bio-Formats
-function readImage(file)
-{
-  // Since we don't know all possible metadata labels for different imaging platforms,
-  // we've decided to implement a generic pattern matching system that allows us to
-  // simply add new labels to the list of known labels by extending the prefix list.
-  // As counting of those metadata labels can be done with or without leading zeros,
-  // we're using the same mechansim to try different combinations of labels with counts,
-  // until we get a valid response from the Ext.getMetadataValue function.
-  counting = "";  // metadata key count subsequential to key
-  metadataPrefixes = newArray("ChannelName #", "Information|Image|Channel|Name #",
-                              "Name #", "PageName #");
-  metadataCounting = newArray("0", "01", "1");
-  countingLength = metadataCounting.length;
-  prefixesLength = metadataPrefixes.length;
-  offset = 0;  // offset between key and slide numbering
-  prefix = "";  // metadata key prefix preceeding count
-  slice = 0;  // default "not found" return value from Ext.getMetadataValue()
-  slices = newArray(0);  // labels
-  sliceCount = 0;
-
-  run("Bio-Formats Windowless Importer", "open=" + v2p(file));
-  Ext.setId(file);  // initializes the given id (file)
-  Ext.getImageCount(sliceCount);
-
-  for (i = 0; slice == 0 && i < prefixesLength; ++i)  // try different metadata prefixes
-  {
-
-    for (j = 0; slice == 0 && j < countingLength; ++j)  // try different metadata counts
-    {
-      Ext.getMetadataValue(metadataPrefixes[i] + metadataCounting[j], slice);
-      if ( slice != 0 )  // matching prefix/count pair
-      {
-        prefix = metadataPrefixes[i];
-        counting = metadataCounting[j];
-        if ( counting == "0" )
-          offset = -1;
-      }
-    }
-
-  }
-
-  for (k = 1; k <= sliceCount; ++k)  // extract metadata for each slice
-  {
-    setSlice(k);
-    if ( counting == "01" && k <= 9 )  // Polaris
-      Ext.getMetadataValue(prefix + "0" + k, slice);
-    else  // MIBI, Vectra, Zeiss
-      Ext.getMetadataValue(prefix + (k + offset), slice);
-    if ( slice == 0 )  // no compatible metadata label found
-      slice = k;  // use number instead
-    setMetadata("Label", slice);  // add label to slice
-    slices = Array.concat(slices, toString(slice));
-    print("\t" + k + ".) " + slice);
-  }
-
-  setSlice(1);  // show first slice
-  run("Maximize");  // maximize window pane
-  return slices;
-}
-
-// Function to rename a region of interest with ROI Manager
-function renameRegion(index, name)
-{
-  roiManager("select", index);
-  roiManager("rename", name);
-  roiManager("select", index);  // selection lost after renaming
-}
-
-// Function to rename an image window
-function renameImage(image, title)
-{
-  if ( image == "" )
-    image = getTitle();
-  selectWindow(image);
-  rename(title);
-}
-
 // Function to render an image with all cellular compartments
 function renderCellsImage(image)
 {
@@ -918,63 +684,6 @@ function renderCellsImage(image)
   colorGroup(4, 127, 127, 127);  // cytoplasm, gray
   colorGroup(1, 207, 184, 124);  // nuclei, gold
   return output;
-}
-
-// Function to rescale pixel intensities to a custom range
-function rescalePixelValues(min_in, max_in, min_out, max_out)
-{
-  // There's a lot of issue that need to be addressed, when rescaling the intensities
-  // of an image from its initial range to a user-defined range: The code validates
-  // user input and catches some common issus that we've encountered.
-  setOption("ScaleConversions", false);
-  run("32-bit");
-
-  // check user input
-  if ( isNaN(min_in) || isNaN(max_in) )  // get extrema from image values
-    getRawStatistics(nPixels, mean, min_in, max_in);
-  difference_in = max_in - min_in;
-  if ( difference_in <= 0.0 )  // invalid denominator for target range factor
-  {
-    if ( difference_in == 0.0 )  // image is monochromatic, do not correct offset
-      min_in = 0.0;
-    difference_in = 1.0;  // ignore value for target range factor calculation
-  }
-  if ( isNaN(min_out) || isNaN(max_out) )  // set arbitrary values
-  {
-    min_out = 0.0;
-    max_out = 1.0;
-  }
-  difference_out = max_out - min_out;
-
-  // work with variable target pixel ranges
-  if ( difference_out > 0.0 )
-  {
-    // substract offset from zero, shift left
-    if ( min_in > 0.0 )
-      run("Subtract...", "value=" + v2p(min_in) + " slice");
-
-    // multiply source range by target range factor
-    factor = difference_out / difference_in;
-    run("Multiply...", "value=" + v2p(factor) + " slice");
-
-    // add offset from zero, shift right
-    run("Add...", "value=" + v2p(min_out) + " slice");
-
-    // correct numerical errors
-    getRawStatistics(nPixels, mean, min, max);
-    if ( min < min_out )
-      run("Min...", "value=" + v2p(min_out));
-    if ( max > max_out )
-      run("Max...", "value=" + v2p(max_out));
-  }
-  // work with fixed target pixel values
-  else if ( max_out == 255 || max_out == 65535 || max_out == 1e30 )  // max values
-    run("Set...", "value=" + v2p(max_out));
-  else if ( min_out == 0 )  // min value
-    run("Set...", "value=" + v2p(min_out));
-  else  // arbitrary value
-    run("Set...", "value=" + v2p(max_out));
-  updateDisplayRange(NaN, NaN);
 }
 
 // Function to train and run a Weka classification
@@ -1030,13 +739,6 @@ function runWekaClassifier(image, target, path)
   }
 
   return output;
-}
-
-// Function to save the Log window content
-function saveLogFile(file)
-{
-  selectWindow("Log"); //select Log window
-  saveAs("Text", file);
 }
 
 // Function to segment cellular matrix images into regions of interest
@@ -1144,99 +846,4 @@ function simulateCellMatrixImage(target, image, contraction, expansion)
   changeValues(min, expansion, 32767.0);  // enhance distances within value
   changeValues((expansion + 1), max, 0.0);  // suppress distances above value
   return output;
-}
-
-// Function to toggle the batch mode on/off or show/hide images while in batch mode
-function toggleBatchMode(activate, temporary)
-{
-  // The ROI Manger seems to ignore the batch mode flag: In contrast, the Results
-  // table is not updated when measuring in batch mode. It turns out that most of
-  // the computational resources required by the ROI Manager are due to frequent
-  // display updates during region manipulation: By minimizing the ROI Manager
-  // window, the CPU load drops significantly. However, window decorators are
-  // OS-accessible only. Luckily, we can resize the ROI Manager to 0x0 pixels,
-  // effectively minimizing the window and prevent window updates.
-  roiManWidth = 197;  // default Windows values
-  roiManHeight = 285;
-  downShift = 0;  // top
-  rightShfit = screenWidth - roiManWidth;  // right
-
-  if ( activate )
-  {
-    if ( is("Batch Mode") )
-    {
-      if ( temporary )
-        setBatchMode("show");  // displays the active hidden image, while batch mode remains in same state
-      else
-      {
-        setBatchMode("exit and display");  // exits batch mode and displays all hidden images
-        print("\tRestoring ROI Manager with updated window content...");
-        Table.setLocationAndSize(rightShfit, downShift, roiManWidth, roiManHeight, "ROI Manager");
-      }
-    }
-    else  // batch mode not yet active
-    {
-      if ( temporary )
-        setBatchMode("hide");  // enters (or remains in) batch mode and hides the active image
-      else
-      {
-        print("\tMinimizing ROI Manager to speed up region processing...");
-        Table.setLocationAndSize(rightShfit, downShift, 0, 0, "ROI Manager");
-        setBatchMode(true);  // enter batch mode and don't display newly opened images
-      }
-    }
-  }
-}
-
-// Function to update the displayed range
-function updateDisplayRange(min, max)
-{
-  // Update the display range without manipulating the pixel intensities.
-  if ( isNaN(min) || isNaN(max) )
-    getRawStatistics(nPixels, mean, min, max);  // slice, not stack
-  setMinAndMax(min, max);
-}
-
-// Function to convert a value to a parameter string
-function v2p(value)
-{
-  // This is a workaround for "undefined variable" errors when using
-  // the address operator (&) in functions' parameter assignments.
-  // By converting the numeric value to a string, we also avoid
-  // string concatenation problems during parameter parsing.
-  return "[" + toString(value) + "]";
-}
-
-// Function to wait for a certain file to be deleted
-function waitForFileDeletion(file)
-{
-  // Network drives might be slow or files might be locked, i.e. opened in
-  // another application and not accessible for deletion. We're therefore
-  // notifying the user and waiting until the lock has been removed.
-  notified = false;
-
-  while ( File.exists(file) )
-  {
-    deleted = File.delete(file);
-    if ( deleted != 1 && !notified )  // deleting failed, notify user
-    {
-      print("\tCan't delete file. Close other programs accessing the file.");
-      notified = true;
-    }
-    wait(1000);  // ms
-  }
-
-}
-
-// Function to wait for a window with a specific title
-function waitForWindow(title)
-{
-  // Wait for computationally expensive calculations to finish by
-  // waiting for the result window to appear. This is better than
-  // waiting for a fixed amount of time with the risk of not having
-  // waited for long enough and failing continuation of the program.
-  while ( !startsWith(getTitle(), title) )  // title of the current batch mode image
-  {
-    wait(500);  // ms
-  }
 }
