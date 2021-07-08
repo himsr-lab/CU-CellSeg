@@ -1,11 +1,11 @@
 
-[2021-5-31, 17:45:10]
+[2021-7-8, 15:11:34]
 ImageJ2 v1.53j99
 CU-CellSeg v1.00 (2021-05-31)
-CU-MacroLibrary v1.00 (2021-05-31)
+CU-MacroLibrary v1.00 (2021-07-08)
 
 *** Processing file ***
-	C:\Users\HIMSR staff\Desktop\Chris\2021-05-31\CU-CellSeg (test)\20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil.tiff
+	C:\Users\HIMSR staff\Desktop\Chris\2021-07-08\CU-CellSeg (test)\20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil.tiff
 Warning: Data has too many channels for Default color mode
 	1.) beta-tubulin (113)
 	2.) CD11c (144)
@@ -43,20 +43,20 @@ Warning: at least one dimension of the image is larger than 1024 pixels.
 Feature stack creation and classifier training might take some time depending on your computer.
  
 	Using classifier found in dataset folder...
-Loading Weka classifier from C:/Users/HIMSR staff/Desktop/Chris/2021-05-31/CU-CellSeg (test)/nu.model...
+Loading Weka classifier from C:/Users/HIMSR staff/Desktop/Chris/2021-07-08/CU-CellSeg (test)/nu.model...
 Field of view: max sigma = 16.0, min sigma = 0.0
 Membrane thickness: 1, patch size: 19
 Read class name: nuclei
 Read class name: uncertain
 Read class name: background
-Read header from C:/Users/HIMSR staff/Desktop/Chris/2021-05-31/CU-CellSeg (test)/nu.model (number of attributes = 46)
-Loaded C:/Users/HIMSR staff/Desktop/Chris/2021-05-31/CU-CellSeg (test)/nu.model
+Read header from C:/Users/HIMSR staff/Desktop/Chris/2021-07-08/CU-CellSeg (test)/nu.model (number of attributes = 46)
+Loaded C:/Users/HIMSR staff/Desktop/Chris/2021-07-08/CU-CellSeg (test)/nu.model
 Calculating probability maps...
 Creating feature stack...
 Updating features of slice number 1...
-Feature stack array is now updated (1 slice(s) with 45 features, took 73873ms).
+Feature stack array is now updated (1 slice(s) with 45 features, took 142292ms).
 Classifying whole image using 28 thread(s)...
-Classifying whole image data took: 2250ms
+Classifying whole image data took: 2144ms
 Finished segmentation of whole image.
  
 Done
@@ -71,20 +71,20 @@ Warning: at least one dimension of the image is larger than 1024 pixels.
 Feature stack creation and classifier training might take some time depending on your computer.
  
 	Using classifier found in dataset folder...
-Loading Weka classifier from C:/Users/HIMSR staff/Desktop/Chris/2021-05-31/CU-CellSeg (test)/ce.model...
+Loading Weka classifier from C:/Users/HIMSR staff/Desktop/Chris/2021-07-08/CU-CellSeg (test)/ce.model...
 Field of view: max sigma = 16.0, min sigma = 0.0
 Membrane thickness: 1, patch size: 19
 Read class name: cellular matrix
 Read class name: uncertain
 Read class name: background
-Read header from C:/Users/HIMSR staff/Desktop/Chris/2021-05-31/CU-CellSeg (test)/ce.model (number of attributes = 46)
-Loaded C:/Users/HIMSR staff/Desktop/Chris/2021-05-31/CU-CellSeg (test)/ce.model
+Read header from C:/Users/HIMSR staff/Desktop/Chris/2021-07-08/CU-CellSeg (test)/ce.model (number of attributes = 46)
+Loaded C:/Users/HIMSR staff/Desktop/Chris/2021-07-08/CU-CellSeg (test)/ce.model
 Calculating probability maps...
 Creating feature stack...
 Updating features of slice number 1...
-Feature stack array is now updated (1 slice(s) with 45 features, took 105271ms).
+Feature stack array is now updated (1 slice(s) with 45 features, took 119536ms).
 Classifying whole image using 28 thread(s)...
-Classifying whole image data took: 3827ms
+Classifying whole image data took: 3882ms
 Finished segmentation of whole image.
  
 Done
@@ -132,9 +132,9 @@ Done
 	This might take a while...
 
 *** Saving results to files ***
-	Writing: C:/Users/HIMSR staff/Desktop/Chris/2021-05-31/CU-CellSeg (test)/\20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil\20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil.zip
-	Writing: C:/Users/HIMSR staff/Desktop/Chris/2021-05-31/CU-CellSeg (test)/\20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil\20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil.csv
-	Writing: C:/Users/HIMSR staff/Desktop/Chris/2021-05-31/CU-CellSeg (test)/\20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil\20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil.tif
-	Writing: C:/Users/HIMSR staff/Desktop/Chris/2021-05-31/CU-CellSeg (test)/\20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil\20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil.txt
+	Writing: C:/Users/HIMSR staff/Desktop/Chris/2021-07-08/CU-CellSeg (test)/\20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil\20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil.zip
+	Writing: C:/Users/HIMSR staff/Desktop/Chris/2021-07-08/CU-CellSeg (test)/\20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil\20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil.csv
+	Writing: C:/Users/HIMSR staff/Desktop/Chris/2021-07-08/CU-CellSeg (test)/\20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil\20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil.tif
+	Writing: C:/Users/HIMSR staff/Desktop/Chris/2021-07-08/CU-CellSeg (test)/\20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil\20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil.txt
 
-[2021-5-31, 17:54:2]
+[2021-7-8, 15:20:51]
