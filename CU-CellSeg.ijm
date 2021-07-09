@@ -95,7 +95,7 @@ batchMode = true;  // speed up processing by limiting visual output
 cellMatrixChannelsLength = cellMatrixChannels.length;
 targetNames = newArray("nu", "ce", "me", "cy", "cm");  // labels for classes and file output
 targetCounts = initializeArray(targetNames.length, 0);  // regions of interest counts
-versionString = "CU-CellSeg v1.00 (2021-05-31)\n" +
+versionString = "CU-CellSeg v1.00 (2021-07-09)\n" +
                  libraryVersion;
 
 
@@ -705,13 +705,7 @@ function runWekaClassifier(image, target, path)
             "when you close this dialog to continue...";
   run("Trainable Weka Segmentation");  // start the Trainable Weka Segmentatio plugin
   waitForWindow("Trainable Weka Segmentation");  // title contains changing version number
-  call("trainableSegmentation.Weka_Segmentation.setFeature", "Difference_of_gaussians=true");
   call("trainableSegmentation.Weka_Segmentation.setFeature", "Entropy=true");
-  call("trainableSegmentation.Weka_Segmentation.setFeature", "Gaussian_blur=true");
-  call("trainableSegmentation.Weka_Segmentation.setFeature", "Hessian=false");
-  call("trainableSegmentation.Weka_Segmentation.setFeature", "Kuwahara=true");
-  call("trainableSegmentation.Weka_Segmentation.setFeature", "Membrane_projections=false");
-  call("trainableSegmentation.Weka_Segmentation.setFeature", "Sobel_filter=true");
   if ( target == targetNames[0] )
     call("trainableSegmentation.Weka_Segmentation.changeClassName", "0", "nuclei");
   else if ( target == targetNames[1] )
