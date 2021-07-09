@@ -788,7 +788,7 @@ function segmentNucleiImage(image, thresholds, counts)
   }
   else
     print("\tNuclei filling: False");
-  run("Watershed");
+  run("Watershed", "slice");
   run("Analyze Particles...", "size=" + v2p(minParticleSize) + "-Infinity show=[Masks] "
                                       + exclude + "in_situ add");
   roiManager("show none");
