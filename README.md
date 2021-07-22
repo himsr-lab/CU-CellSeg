@@ -1,4 +1,4 @@
-![header](https://user-images.githubusercontent.com/19319377/116188917-678dcd00-a6e5-11eb-91ca-9f0418843dff.png)
+![header](https://user-images.githubusercontent.com/19319377/126721984-ac2d2df2-6017-4073-806d-7667f6c600d5.png)
 # CU-CellSeg
 ## Cell segmentation of multi-channel images
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4599644.svg)](https://doi.org/10.5281/zenodo.4599644)
