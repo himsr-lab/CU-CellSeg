@@ -7,7 +7,7 @@ The CU-CellSeg macro implements a "classic" cell segmentation method with a mark
 
 ![segmentation](https://user-images.githubusercontent.com/19319377/126821004-dcab1ab1-d0f5-40fc-84b4-8a2baa3b062a.png)
 
-**Figure 1: Segmentation example.** Segmentation of the composite image (top). The dsDNA channel was used to segment nuclei (gold). The beta-tubulin channel allowed for the cell expansion (white) with a minimum [`cellExpansion`](https://github.com/christianrickert/CU-CellSeg/blob/aa5d81d9ce6ccff3f858de4ff4ccfa086750dffd/CU-CellSeg.ijm#L87) of 1.5 µM and a maximum [`cellExpansionLimit`](https://github.com/christianrickert/CU-CellSeg/blob/aa5d81d9ce6ccff3f858de4ff4ccfa086750dffd/CU-CellSeg.ijm#L88) of 100 µM.
+**Figure 1: Segmentation example.** Segmentation of the composite image (top). The dsDNA channel was used to segment nuclei (gold). The beta-tubulin channel allowed for the cell expansion (white) with a minimum [`cellExpansion`](https://github.com/christianrickert/CU-CellSeg/blob/aa5d81d9ce6ccff3f858de4ff4ccfa086750dffd/CU-CellSeg.ijm#L87) of 1.5 µm and a maximum [`cellExpansionLimit`](https://github.com/christianrickert/CU-CellSeg/blob/aa5d81d9ce6ccff3f858de4ff4ccfa086750dffd/CU-CellSeg.ijm#L88) of 100 µm.
 
 ### Software documentation
 The documentation of our macros is in the corresponding source code: You can view the source code on GitHub by following the links to the macros.
