@@ -5,9 +5,9 @@
 ### Segmentation method
 The CU-CellSeg macro implements a "classic" cell segmentation method with a marker-based cell expansion: In short, pixel probability maps for nucleus channels (mandatory) and cell matrix channels (optional) are thresholded and segmented by ImageJ's [watershed algorithm](https://imagej.nih.gov/ij/docs/guide/146-29.html#sub:Watershed) (nuclei) and by the ["Find maxima..." function](https://imagej.nih.gov/ij/docs/guide/146-29.html#sub:Find-Maxima) (cell matrix) to create individual cellular compartments. Typical nucleus channels would be markers for DAPI, dsDNA, or histone. Cell matrix channels could be cytoplasm markers (beta-tubulin, keratin, vimentin, ...) or membrane markers (V-ATPase, HLA class 1, CD8, ...), or both. If no cell matrix channel is specified (default), cell outlines are generated from the expansion of the nuclei outlines by a fixed radius. Both cell matrix options generate non-overlapping cell outlines.
 
-![nuclei](https://user-images.githubusercontent.com/19319377/116176320-34404380-a6cf-11eb-998f-4f9d501c8398.png) ![matrix](https://user-images.githubusercontent.com/19319377/116176328-373b3400-a6cf-11eb-9588-298a12cf4f00.png)
+![segmentation](https://user-images.githubusercontent.com/19319377/126821004-dcab1ab1-d0f5-40fc-84b4-8a2baa3b062a.png)
 
-**Figure 1: Segmentation example.** Detail from the center of the composite image (top). Left side: Grayscale dsDNA channel with nuclei outlines (blue). Right side: Grayscale beta-tubulin channel with cell matrix outlines (red).
+**Figure 1: Segmentation example.** Segmentation of the composite image (top). The dsDNA channel was used to segment nuclei (gold). The beta-tubulin channel allowed for the cell expansion (white) with a minimum [`cellExpansion`](https://github.com/christianrickert/CU-CellSeg/blob/aa5d81d9ce6ccff3f858de4ff4ccfa086750dffd/CU-CellSeg.ijm#L87) of 1.5 µM and a maximum [`cellExpansionLimit`](https://github.com/christianrickert/CU-CellSeg/blob/aa5d81d9ce6ccff3f858de4ff4ccfa086750dffd/CU-CellSeg.ijm#L88) of 100 µM.
 
 ### Software documentation
 The documentation of our macros is in the corresponding source code: You can view the source code on GitHub by following the links to the macros.
