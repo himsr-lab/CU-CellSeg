@@ -95,7 +95,7 @@ batchMode = true;  // speed up processing by limiting visual output
 cellMatrixChannelsLength = cellMatrixChannels.length;
 targetNames = newArray("nu", "ce", "me", "cy", "cm");  // labels for classes and file output
 targetCounts = initializeArray(targetNames.length, 0);  // regions of interest counts
-versionString = "CU-CellSeg v1.00 (2021-07-09)\n" +
+versionString = "CU-CellSeg v1.00 (2021-08-12)\n" +
                  libraryVersion;
 
 
@@ -107,7 +107,7 @@ print("\\Clear");  // clear Log window
 requires("1.52u");  // minimum ImageJ version
 run("ROI Manager...");  // start before batch mode
 run("Roi Defaults...", "color=red stroke=0 group=0");
-roiManager("UseNames", "true");  // use ROI names as labels
+roiManager("useNames", "true");  // use ROI names as labels
 run("Options...", "edm=16-bit");  // access larger distances
 run("Brightness/Contrast...");  // start for user convenience
 file = File.openDialog("Select the first TIFF of your dataset");
