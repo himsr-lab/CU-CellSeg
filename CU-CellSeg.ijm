@@ -272,6 +272,7 @@ function createCompartments(target, counts)
 
   cellArea = 0.0;  // area in pixel²
   cellMatrixContraction = -cellMatrixContraction;
+  delimiter = ":";
   membraneWidth = -membraneWidth;
   nucleiContraction = -nucleiContraction;
   nucleusArea = 0.0;
@@ -310,11 +311,11 @@ function createCompartments(target, counts)
           RoiManager.setGroup(5);
           if ( addRemainderRegion(i, newArray(n, p)) )  // cell minus nucleus and shrunk cell
           {
-            renameRegion(++p, regionID + targetNames[2]);  // calculated membrane
+            renameRegion(++p, regionID + delimiter + targetNames[2]);  // calculated membrane
             RoiManager.setGroup(3);
             if ( addRemainderRegion(i, newArray(n, p)) )  // cell minus nucleus and membrane
             {
-              renameRegion(++p, regionID + targetNames[3]); // remaining cytoplasm
+              renameRegion(++p, regionID + delimiter + targetNames[3]); // remaining cytoplasm
               RoiManager.setGroup(4);
             }
           }
@@ -324,7 +325,7 @@ function createCompartments(target, counts)
           if ( addRemainderRegion(i, newArray(toString(n))) )  // cell minus nucleus
           {
             p = getLastRegionIndex();
-            renameRegion(p, regionID + targetNames[4]); // cellular matrix
+            renameRegion(p, regionID + delimiter + targetNames[4]); // cellular matrix
             RoiManager.setGroup(3);
           }
         }
@@ -431,16 +432,6 @@ function finalizeRun(path, name, image)
   waitForFileDeletion(txtFile);
   printDateTimeStamp();
   saveLogFile(txtFile);
-}
-
-// Function to get id from region of interest name
-function getRegionID(index)
-{
-  roiManager("select", index);
-  regionName = Roi.getName();
-  delimiterIndex = indexOf(regionName, ":");
-  regionID = substring(regionName, 0, delimiterIndex + 1);  // region id with delimiter
-  return regionID;
 }
 
 // Function reads user-defined threshold values
