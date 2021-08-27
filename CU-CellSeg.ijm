@@ -95,7 +95,7 @@ batchMode = true;  // speed up processing by limiting visual output
 cellMatrixChannelsLength = cellMatrixChannels.length;
 targetNames = newArray("nu", "ce", "me", "cy", "cm");  // labels for classes and file output
 targetCounts = initializeArray(targetNames.length, 0);  // regions of interest counts
-versionString = "CU-CellSeg v1.00 (2021-08-12)\n" +
+versionString = "CU-CellSeg v1.00 (2021-08-27)\n" +
                  libraryVersion;
 
 
@@ -110,29 +110,21 @@ run("Roi Defaults...", "color=red stroke=0 group=0");
 roiManager("useNames", "true");  // use ROI names as labels
 run("Options...", "edm=16-bit");  // access larger distances
 run("Brightness/Contrast...");  // start for user convenience
-file = File.openDialog("Select the first TIFF of your dataset");
-processFolder(file, suffixes, userThresholds);
+files = getFilesInFolder("Select the first TIFF of your dataset", suffixes);
+processFolder(files, userThresholds);
 
 /*
  *  Loop
  */
 
 // Function to process files with matching suffixes from a folder
-function processFolder(file, suffixes, thresholds)
+function processFolder(files, thresholds)
 {
-  folder = File.getParent(file);
-  objects = getFileList(folder);  // files and folders
-  objectsLength = objects.length;
-
-  processFile(file, thresholds);  // file selected by user
-
-  for (i = 0; i < objectsLength; ++i)  // all other files in folder
+  files_length = files.length;
+  for ( i = 0; i < files_length; ++i )
   {
-    objectPath = folder + File.separator + objects[i];
-    if(endsWithEither(objectPath, suffixes) && objectPath != file)
-      processFile(objectPath, thresholds);
+    processFile(files[i], thresholds);
   }
-
 }
 
 // Function to process a single file
