@@ -301,11 +301,11 @@ function createCompartments(target, counts)
           p = getLastRegionIndex();  // get an index pointer
           roiManager("select", p);
           RoiManager.setGroup(5);
-          if ( addRemainderRegion(i, newArray(n, p)) )  // cell minus nucleus and shrunk cell
+          if ( substractRegions(i, newArray(n, p)) )  // cell minus nucleus and shrunk cell
           {
             renameRegion(++p, regionID + delimiter + targetNames[2]);  // calculated membrane
             RoiManager.setGroup(3);
-            if ( addRemainderRegion(i, newArray(n, p)) )  // cell minus nucleus and membrane
+            if ( substractRegions(i, newArray(n, p)) )  // cell minus nucleus and membrane
             {
               renameRegion(++p, regionID + delimiter + targetNames[3]); // remaining cytoplasm
               RoiManager.setGroup(4);
@@ -314,7 +314,7 @@ function createCompartments(target, counts)
         }
         else  // no membrane requested
         {
-          if ( addRemainderRegion(i, newArray(toString(n))) )  // cell minus nucleus
+          if ( substractRegions(i, newArray(toString(n))) )  // cell minus nucleus
           {
             p = getLastRegionIndex();
             renameRegion(p, regionID + delimiter + targetNames[4]); // cellular matrix
