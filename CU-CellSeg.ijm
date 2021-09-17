@@ -95,7 +95,7 @@ batchMode = true;  // speed up processing by limiting visual output
 cellMatrixChannelsLength = cellMatrixChannels.length;
 targetNames = newArray("nu", "ce", "me", "cy", "cm");  // labels for classes and file output
 targetCounts = initializeArray(targetNames.length, 0);  // regions of interest counts
-versionString = "CU-CellSeg v1.00 (2021-09-14)\n" +
+versionString = "CU-CellSeg v1.00 (2021-09-17)\n" +
                  libraryVersion;
 
 
@@ -570,7 +570,6 @@ function measureRegions(image)
   print("\n*** Measuring regions of interest ***");
   print("\tThis might take a while...");
   rois = roiManager("count");
-  setMeasurements = false;
   slices = 0;
 
   selectWindow(image);
