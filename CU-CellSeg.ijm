@@ -95,7 +95,7 @@ batchMode = true;  // speed up processing by limiting visual output
 cellMatrixChannelsLength = cellMatrixChannels.length;
 targetNames = newArray("nu", "ce", "me", "cy", "cm");  // labels for classes and file output
 targetCounts = initializeArray(targetNames.length, 0);  // regions of interest counts
-versionString = "CU-CellSeg v1.00 (2021-09-17)\n" +
+versionString = "CU-CellSeg v1.00 (2021-09-24)\n" +
                  libraryVersion;
 
 
@@ -300,7 +300,7 @@ function createCompartments(target, counts)
           roiManager("add");  // shrunk cell
           p = getLastRegionIndex();  // get an index pointer
           roiManager("select", p);
-          RoiManager.setGroup(5);
+          RoiManager.setGroup(9);
           if ( substractRegions(i, newArray(n, p)) )  // cell minus nucleus and shrunk cell
           {
             renameRegion(++p, regionID + delimiter + targetNames[2]);  // calculated membrane
@@ -318,7 +318,7 @@ function createCompartments(target, counts)
           {
             p = getLastRegionIndex();
             renameRegion(p, regionID + delimiter + targetNames[4]); // cellular matrix
-            RoiManager.setGroup(3);
+            RoiManager.setGroup(5);
           }
         }
       }
@@ -489,7 +489,7 @@ function matchNucleiWithCells(target, counts)
   matched = initializeArray(cells, false);  // matching table for cells
   offset = 100;  // offset from multithreaded cellular matrix segmentation
   roiManager("select", Array.getSequence(rois));  // select all regions
-  RoiManager.setGroup(5);  // unmatched regions, mark for later removal
+  RoiManager.setGroup(9);  // unmatched regions, mark for later removal
 
   showProgress(0);  // reset progress bar
   for (n = 0; n < nuclei; ++n)  // iterate through nuclei
