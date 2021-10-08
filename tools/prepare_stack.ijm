@@ -31,7 +31,7 @@
  *  projected channels can be saved in the 'projectionTarget' folder, if the
  *  'projectionChannels' array contains at least one channel name or slice number.
  *  The output images can then be stacked by loading the images into ImageJ2 and
- *  then caling the "Images to Stack" function. Load the resulting stack with the
+ *  calling the "Images to Stack" function. Load the resulting stack with the
  *  "Trainable Weka Segmentation" plugin to achieve stable segmentation results.
  *
  *  Dependencies:
