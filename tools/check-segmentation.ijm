@@ -64,5 +64,4 @@ run("Watershed", "slice");
 run("Analyze Particles...", "size=10-Infinity pixel show=Masks clear add in_situ slice");
 close("Probability*");
 setBatchMode(false);
-resetMinAndMax();
 roiManager("show all without labels")
