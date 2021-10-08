@@ -40,7 +40,7 @@
  *
  *  Version:
  *
- *  2021-10-08
+ *  v1.00 (2021-10-08)
  */
 
 nucleiFilling = false;  // fixes nuclei with darker centers
