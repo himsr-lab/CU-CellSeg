@@ -95,7 +95,7 @@ batchMode = true;  // speed up processing by limiting visual output
 cellMatrixChannelsLength = cellMatrixChannels.length;
 targetNames = newArray("nu", "ce", "me", "cy", "cm");  // labels for classes and file output
 targetCounts = initializeArray(targetNames.length, 0);  // regions of interest counts
-versionString = "CU-CellSeg v1.00 (2021-10-04)\n" +
+versionString = "CU-CellSeg v1.00 (2021-10-11)\n" +
                  libraryVersion;
 
 
@@ -328,7 +328,7 @@ function createCompartments(target, counts)
   }
 
   showStatus("!Deleting temporary regions...");
-  deleteGroupRegions(5);
+  deleteGroupRegions(9);
   roiManager("sort");  // new regions are sorted by creation time
   showStatus("");  // clear and free status message
   RoiManager.selectGroup(3);  // cellular matrix or membranes
@@ -543,7 +543,7 @@ function matchNucleiWithCells(target, counts)
   }
 
   showStatus("!Deleting unmatched regions...");
-  deleteGroupRegions(5);
+  deleteGroupRegions(9);
   roiManager("sort");  // matching regions are unordered
   showStatus("");
   RoiManager.selectGroup(1);
