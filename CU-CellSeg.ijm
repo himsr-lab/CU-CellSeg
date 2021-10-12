@@ -93,6 +93,7 @@ nucleiContraction = 0.0;  // nuclei masks contraction [units]
 // advanced user settings
 batchMode = true;  // speed up processing by limiting visual output
 cellMatrixChannelsLength = cellMatrixChannels.length;
+targetGroups = newArray(1, 2, 3, 4, 5, 9);  // group ids for corresponding targets
 targetNames = newArray("nu", "ce", "me", "cy", "cm");  // labels for classes and file output
 targetCounts = initializeArray(targetNames.length, 0);  // regions of interest counts
 versionString = "CU-CellSeg v1.00 (2021-10-12)\n" +
@@ -300,15 +301,15 @@ function createCompartments(target, counts)
           roiManager("add");  // shrunk cell
           p = getLastRegionIndex();  // get an index pointer
           roiManager("select", p);
-          RoiManager.setGroup(9);
+          RoiManager.setGroup(targetGroups[5]);
           if ( substractRegions(i, newArray(n, p)) )  // cell minus nucleus and shrunk cell
           {
             renameRegion(++p, regionID + delimiter + targetNames[2]);  // calculated membrane
-            RoiManager.setGroup(3);
+            RoiManager.setGroup(targetGroups[2]);
             if ( substractRegions(i, newArray(n, p)) )  // cell minus nucleus and membrane
             {
               renameRegion(++p, regionID + delimiter + targetNames[3]); // remaining cytoplasm
-              RoiManager.setGroup(4);
+              RoiManager.setGroup(targetGroups[3]);
             }
           }
         }
@@ -318,7 +319,7 @@ function createCompartments(target, counts)
           {
             p = getLastRegionIndex();
             renameRegion(p, regionID + delimiter + targetNames[4]); // cellular matrix
-            RoiManager.setGroup(5);
+            RoiManager.setGroup(targetGroups[4]);
           }
         }
       }
@@ -328,17 +329,17 @@ function createCompartments(target, counts)
   }
 
   showStatus("!Deleting temporary regions...");
-  deleteGroupRegions(9);
+  deleteGroupRegions(targetGroups[5]);
   roiManager("sort");  // new regions are sorted by creation time
   showStatus("");  // clear and free status message
-  RoiManager.selectGroup(3);  // cellular matrix or membranes
-  counts[2] = RoiManager.selected();
-  RoiManager.selectGroup(4);  // cytoplasm
-  counts[3] = RoiManager.selected();
   roiManager("show none");
   clearAllSelections();
   if ( membraneWidth < 0 )
   {
+    RoiManager.selectGroup(targetGroups[2]);  // membranes
+    counts[2] = RoiManager.selected();
+    RoiManager.selectGroup(targetGroups[3]);  // cytoplasm
+    counts[3] = RoiManager.selected();
     print("\tCounts: " + counts[0] + " (" + target[0] + "), "
                        + counts[1] + " (" + target[1] + "), "
                        + counts[2] + " (" + target[2] + "), "
@@ -346,9 +347,11 @@ function createCompartments(target, counts)
   }
   else
   {
+    RoiManager.selectGroup(targetGroups[4]);  // cell matrix
+    counts[4] = RoiManager.selected(); 
     print("\tCounts: " + counts[0] + " (" + target[0] + "), "
                        + counts[1] + " (" + target[1] + "), "
-                       + counts[2] + " (" + target[4] + ")");
+                       + counts[4] + " (" + target[4] + ")");
   }
 }
 
@@ -490,7 +493,7 @@ function matchNucleiWithCells(target, counts)
   matched = initializeArray(cells, false);  // matching table for cells
   offset = 100;  // offset from multithreaded cellular matrix segmentation
   roiManager("select", Array.getSequence(rois));  // select all regions
-  RoiManager.setGroup(9);  // unmatched regions, mark for later removal
+  RoiManager.setGroup(targetGroups[5]);  // unmatched regions, mark for later removal
 
   showProgress(0);  // reset progress bar
   for (n = 0; n < nuclei; ++n)  // iterate through nuclei
@@ -527,10 +530,10 @@ function matchNucleiWithCells(target, counts)
           {
             regionID = toString(n + 1) + ":";  // avoid "NaN" error with preceeding numeric value
             renameRegion(n, regionID + targetNames[0]);
-            RoiManager.setGroup(1);  // nucleus, paired with cell
+            RoiManager.setGroup(targetGroups[0]);  // nucleus, paired with cell
             found = true;
             renameRegion(i, regionID + targetNames[1]);
-            RoiManager.setGroup(2);  // cell, matched with nucleus
+            RoiManager.setGroup(targetGroups[1]);  // cell, matched with nucleus
             matched[c] = true;
           }
         }
@@ -543,12 +546,12 @@ function matchNucleiWithCells(target, counts)
   }
 
   showStatus("!Deleting unmatched regions...");
-  deleteGroupRegions(9);
+  deleteGroupRegions(targetGroups[5]);
   roiManager("sort");  // matching regions are unordered
   showStatus("");
-  RoiManager.selectGroup(1);
+  RoiManager.selectGroup(targetGroups[0]);
   counts[0] = RoiManager.selected();
-  RoiManager.selectGroup(2);
+  RoiManager.selectGroup(targetGroups[1]);
   counts[1] = RoiManager.selected();
   roiManager("show none");
   clearAllSelections();
@@ -662,11 +665,11 @@ function renderCellsImage(image)
   createImageFromTemplate(image, output);
   if ( batchMode )
     run("RGB Color");
-  colorGroup(2, 255, 0, 0);  // cell background, red (should not be visible)
-  colorGroup(5, 255, 255, 255);  // cellular matrix, white
-  colorGroup(3, 192, 192, 192);  // membranes, ligth gray
-  colorGroup(4, 127, 127, 127);  // cytoplasm, gray
-  colorGroup(1, 207, 184, 124);  // nuclei, gold
+  colorGroup(targetGroups[1], 255, 0, 0);  // cell background, red (should not be visible)
+  colorGroup(targetGroups[4], 255, 255, 255);  // cellular matrix, white
+  colorGroup(targetGroups[2], 192, 192, 192);  // membranes, ligth gray
+  colorGroup(targetGroups[3], 127, 127, 127);  // cytoplasm, gray
+  colorGroup(targetGroups[0], 207, 184, 124);  // nuclei, gold
   return output;
 }
 
