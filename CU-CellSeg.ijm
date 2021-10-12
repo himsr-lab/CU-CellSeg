@@ -95,7 +95,7 @@ batchMode = true;  // speed up processing by limiting visual output
 cellMatrixChannelsLength = cellMatrixChannels.length;
 targetNames = newArray("nu", "ce", "me", "cy", "cm");  // labels for classes and file output
 targetCounts = initializeArray(targetNames.length, 0);  // regions of interest counts
-versionString = "CU-CellSeg v1.00 (2021-10-11)\n" +
+versionString = "CU-CellSeg v1.00 (2021-10-12)\n" +
                  libraryVersion;
 
 
@@ -662,8 +662,9 @@ function renderCellsImage(image)
   createImageFromTemplate(image, output);
   if ( batchMode )
     run("RGB Color");
-  colorGroup(2, 255, 0, 0);  // cells, red (should not be visible)
-  colorGroup(3, 255, 255, 255);  // cellular matrix or membranes, white
+  colorGroup(2, 255, 0, 0);  // cell background, red (should not be visible)
+  colorGroup(5, 255, 255, 255);  // cellular matrix, white
+  colorGroup(3, 192, 192, 192);  // membranes, ligth gray
   colorGroup(4, 127, 127, 127);  // cytoplasm, gray
   colorGroup(1, 207, 184, 124);  // nuclei, gold
   return output;
