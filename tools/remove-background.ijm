@@ -28,18 +28,20 @@
  *
  *
  *  Removes the background (donor) contribution in multi-channel images from
- *  sample (recipient) channels by scaling each sample channel pixel with the
- *  inverse of its background probability. The probability map is generated from
- *  a corresponding "Trainable Weka Segmentation" plugin model.
- *  The background-corrected pixel value R*[x,y] can be calculated using
- *  the following formula:
+ *  sample (receptor) channels by scaling each sample channel pixel with the
+ *  inverse of its background probability. The probability map is generated
+ *  from a corresponding "Trainable Weka Segmentation" plugin model.
+ *  The background-corrected receptor values for each given pixel R*[x,y]
+ *  can be calculated using the following formula:
  *      
- *  R*[x,y] = f / p(D[x,y] * R[x,y]					(1)
+ *  R*[x,y] = (1 - (f * p(D[x,y])) * R[x,y]					(1)
  *
- *  where R[x,y] is the initial pixel value at locaction [x,y] in the recipient
- *  channel and p(D[x,y]) is the background probability as calculated for the
- *  corresponding pixel in the donor channel. The factor f is a fixed scaling
- *  factor that can be used to increase or decrease the background correction.
+ *  The donor factor f is a fixed normalization factor that can be used to
+ *  increase or decrease the background correction scaling from 0-100%.
+ *  Alternatively, a binary background/sample mask can be applied to receptor
+ *  channels by thresholding the background probability:
+ *  Receptor values that fall within the background mask will be set to zero
+ *  and receptor values that fall within the sample mask will be preserved.
  *  
  *  Dependencies:
  *
@@ -48,6 +50,253 @@
  *
  *  Version:
  *
- *  v1.00 (2021-10-15)
+ *  v1.00 (2021-10-16)
  */
+
+print("\\Clear");
+
+run("Bio-Formats Macro Extensions");
+
+donorChannels = newArray("Tantalum (slide surface) (181)");
+donorFactor = 1.0;  // valid range: 0-1, i.e. 0-100%
+receptorChannels = newArray("a-sma", "beta-tubulin", "vimentin", "xenon");  // optional, all if not specified 
+userThresholds = newArray(false, 0.5, 1e30);  // default values
+targetNames = newArray("re");  // class label and file output
+suffixes = newArray(".tif", ".tiff");
+files = getFilesInFolder("Select the first TIFF of your dataset", suffixes);
+processFolder(files);
+
+/*
+ *  Loop
+ */
+
+// Function to process files with matching suffixes from a folder
+function processFolder(files)
+{
+  files_length = files.length;
+  for ( i = 0; i < files_length; ++i )
+  {
+    processFile(files[i]);
+  }
+}
+
+function processFile(file)
+{
+//  toggleBatchMode(true, false);
+
+  // clear previous run
+  print("\\Clear");
+  run("Close All");
+
+  // print current file name
+  print("\n*** Processing file ***");
+  print("\t" + file);
+
+  // read image file
+  filePath = File.getDirectory(file);
+  fileName = File.getName(file);
+  fileSlices = readImage(file);
+  fileTitle = getTitle();
+  
+  // create donor classification
+  projectedDonor = projectStack(fileTitle, fileSlices, donorChannels, targetNames[0]);
+  classifiedDonor = classifyImage(projectedDonor, targetNames[0], filePath);
+
+  // create binary map with theshold values
+  if ( userThresholds[1] == 0.5 && userThresholds[2] == 1e30 )
+  {
+    setUserThresholds(userThresholds);
+  }
+  if ( userThresholds[0] == true )
+  {
+    setOption("BlackBackground", true);
+    run("Convert to Mask", "method=Default background=Dark black");
+    rescalePixelValues(NaN, NaN, 0.0, donorFactor);
+  }
+
+  // apply classification or binary map to recipient channels
+  receptorChannelsLength = receptorChannels.length;
+  if ( receptorChannelsLength == 0 )
+    imageCalculator("Multiply create 32-bit stack", classifiedDonor,fileName);
+  else {
+  {
+  	
+  	fileSlicesLength = fileSlices.length;
+	for (i = 1; i <= fileSlicesLength; ++i)  // iterate through slices
+	{
+	
+	  for (j = 0; j < receptorChannelsLength; ++j)  // match slice names with channels
+	  {
+	    slice = toLowerCase(fileSlices[i - 1]);  // label pattern: "#" or "name (channel/mass)"
+	    if ( slice == receptorChannels[j] ||
+	         slice.contains(toLowerCase(receptorChannels[j])  + " ") )  // matching pattern: "name "
+	    {
+	      setSlice(i);
+	      imageCalculator("Multiply 32-bit", classifiedDonor,fileName);
+	    }
+	  }
+	  
+	}
+  
+  }
+  // close active Bio-Formats dataset
+//  Ext.close();
+//  close("*"); 
+
+//  toggleBatchMode(true, false);
+}
+
+/*
+ *  Functions
+ */
+
+// Function to classify images for more robust segmentation results
+function classifyImage(image, target, path)
+{
+  print("\n*** Classifying " + target + " image ***");
+
+  selectWindow(image);
+  setMetadata("Label", image);  // Weka displays label in its window
+  normalizePixelValues();  // normalize for stable classification results
+  output = runWekaClassifier(image, target, path);
+  return output;
+}
+
+// Function reads user-defined threshold values
+function getUserThresholds(thresholds)
+{
+  title =   "Finalize thresholds limits";
+  message = "Set the limits in the Threshold window and\n" +
+            "cover the background with the blue mask:\n" +
+            "Leave the white target regions unmasked.\n \n" +
+            "The macro will apply the new thresholds,\n" +
+            "upon confirming this dialog with OK,\n" +
+            "but stop execution with Cancel.";
+  
+//  toggleBatchMode(batchMode, true);  // stay in batch mode, but show current image
+  run("Threshold...");
+  call("ij.plugin.frame.ThresholdAdjuster.setMethod", "Default");  // preset Window defaults
+  call("ij.plugin.frame.ThresholdAdjuster.setMode", "Over/Under");
+  waitForUser(title, message);
+  getThreshold(thresholds[1], thresholds[2]);
+  run("Close");
+//  toggleBatchMode(batchMode, true);  // hide image and (re-)enter batch mode
+}
+
+// Function to create a projected image from an image stack
+function projectStack(image, slices, channels, target)
+{
+  // The slices used for the projection are identified by matching the slice labels
+  // with the user-defined channel list. We're then creating a copy of the user-defined
+  // channel or a projection of the list user-defined channels. Before the projection,
+  // each slice is normalized by its median value to balance all pixel intensities.
+  print("\n*** Projecting " + target + " image ***");
+  output = target + "->proj";
+  channelsLength = channels.length;
+  channelMatches = 0;
+  slicesLength = slices.length;
+  stackSelection = "";
+
+  selectWindow(image);
+
+  for (i = 1; i <= slicesLength; ++i)  // iterate through slices
+  {
+
+    for (j = 0; j < channelsLength; ++j)  // match slice names with channels
+    {
+      slice = toLowerCase(slices[i - 1]);  // label pattern: "#" or "name (channel/mass)"
+      if ( slice == channels[j] ||
+          slice.contains(toLowerCase(channels[j])  + " ") )  // matching pattern: "name "
+      {
+        if ( stackSelection.length > 0 )  // append slices
+          stackSelection = stackSelection + ",";
+        stackSelection = stackSelection + toString(i);
+        channelMatches += 1;
+      }
+    }
+
+  }
+
+  if ( channelMatches <= 1 )  // copy slice from stack
+  {
+    if ( channelMatches == 1 )  // select matching channel
+      setSlice(stackSelection);
+    run("Duplicate...", "title=slice-" + target);
+  }
+  else if ( channelMatches >= 2 ) // stack matching channels
+  {
+    run("Make Substack...", "channels=" + v2p(stackSelection));
+    renameImage("", "stack-" + target);
+
+    for (i = 0; i < channelMatches; ++i)
+    {
+      setSlice(i + 1);
+      normalizePixelValues();  // normalize for balanced projection results
+    }
+
+    run("Z Project...", "projection=[Sum Slices]");  // project stack to image
+    close("stack-*");  // close projection stack
+  }
+  renameImage("", output);
+  print("\tChannels: \"" + stackSelection + "\" (" + target + ")");
+  return output;
+}
+
+// Function to train and run a Weka classification
+function runWekaClassifier(image, target, path)
+{
+  // The tricky part was to wait until the Trainable Weka Classifier plugin has
+  // started or until the computation of the probability maps was completed,
+  // since these variable times are highly system-dependent. This problem was
+  // solved by frequently checking for the currently selected image name:
+  // By default, newly opened or created images get the focus in ImageJ2.
+  output = image + "->prob";
+  classifier = path + target +".model";
+  data = path + target +".arff";
+  title =   "Finalize classifier training";
+  message = "Draw selections in the Weka window and\n" +
+            "assign these to their respective classes:\n" +
+            "Train the classifier to update the results.\n \n" +
+            "The macro will save the new classifier,\n" +
+            "upon confirming this dialog with OK,\n" +
+            "but stop execution with Cancel.";
+  
+  run("Trainable Weka Segmentation");  // start the Trainable Weka Segmentatio plugin
+  waitForWindow("Trainable Weka Segmentation");  // title contains changing version number
+  call("trainableSegmentation.Weka_Segmentation.setFeature", "Entropy=true");
+  call("trainableSegmentation.Weka_Segmentation.changeClassName", "0", "receptor (sample)");
+  call("trainableSegmentation.Weka_Segmentation.changeClassName", "1", "donor (background)");
+  if ( !File.exists(classifier) )  // classifier missing in folder
+  {
+    print("\tNo classifier file in dataset folder...");
+    waitForUser(title, message);
+    call("trainableSegmentation.Weka_Segmentation.saveClassifier", classifier);
+    call("trainableSegmentation.Weka_Segmentation.saveData", data);
+  }
+  print("\tUsing classifier found in dataset folder...");
+  call("trainableSegmentation.Weka_Segmentation.loadClassifier", classifier);
+  call("trainableSegmentation.Weka_Segmentation.getProbability");
+  waitForWindow("Probability maps");  // computation time machine-dependent
+  close("Trainable Weka Segmentation*");  // title changes with version
+  renameImage("", output);
+
+  while ( nSlices() > 1 )  // use only first probability map
+  {
+    setSlice(nSlices());
+    run("Delete Slice");
+  }
+
+  return output;
+}
+
+// Function reads user-defined threshold values
+function setUserThresholds(thresholds)
+{
+  setThreshold(thresholds[1], thresholds[2]);  // preset default values
+  if ( thresholds[0] == false )  // check for custom values
+    getUserThresholds(thresholds);
+  setThreshold(thresholds[1], thresholds[2]);
+  thresholds[0] = true;
+  print("\tThresholds: " + thresholds[1] + " (lower), " + thresholds[2] + " (upper)");
+}
 
