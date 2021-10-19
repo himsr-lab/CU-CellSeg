@@ -34,14 +34,18 @@
  *  The background-corrected receptor values for each given pixel R*[x,y]
  *  can be calculated using the following formula:
  *      
- *  R*[x,y] = (1 - (f * p(D[x,y])) * R[x,y]					(1)
+ *  R*[x,y] = (1 - (d * p(D[x,y])) * (R[x,y] - o)					(1)
  *
- *  The donor factor f is a fixed normalization factor that can be used to
- *  increase or decrease the background correction scaling from 0-100%.
- *  Alternatively, a binary background/sample mask can be applied to receptor
- *  channels by thresholding the background probability:
- *  Receptor values that fall within the background mask will be set to zero
- *  and receptor values that fall within the sample mask will be preserved.
+ *  The donor factor 'd' is a normalization factor that can be used to increase
+ *  or decrease the background correction scaling. The scaling is based on the
+ *  background probability 'p' derived from the donor channel 'D[x,y]'.
+ *  In addition to the scaling, the receptor values can be manipulated by applying
+ *  the receptor offset 'o', which is applied before the scaling.
+ *  As an alterntive to the background correction scaling, the donor probability
+ *  map can be binarized by thresholding:
+ *  In this case, all receptor values that fall within the background mask will
+ *  be set to zero and all receptor values that fall within the sample mask
+ *  will only be offset by the value 'o'.
  *  
  *  Dependencies:
  *
@@ -50,18 +54,19 @@
  *
  *  Version:
  *
- *  v1.00 (2021-10-16)
+ *  v1.00 (2021-10-19)
  */
 
 print("\\Clear");
 
 run("Bio-Formats Macro Extensions");
 
-donorChannels = newArray("Tantalum (slide surface) (181)");
-donorFactor = 1.0;  // valid range: 0-1, i.e. 0-100%
-receptorChannels = newArray("a-sma", "beta-tubulin", "vimentin", "xenon");  // optional, all if not specified 
-userThresholds = newArray(false, 0.5, 1e30);  // default values
-targetNames = newArray("re");  // class label and file output
+donorChannels = newArray("tantalum");
+donorFactor = 1.0;
+receptorChannels = newArray(0);  // optional, all if not specified 
+receptorOffset = 0.0;
+userThresholds = newArray(false, -1e30, 1e30);  // default values
+targetNames = newArray("do");  // class label and file output
 suffixes = newArray(".tif", ".tiff");
 files = getFilesInFolder("Select the first TIFF of your dataset", suffixes);
 processFolder(files);
@@ -103,7 +108,7 @@ function processFile(file)
   classifiedDonor = classifyImage(projectedDonor, targetNames[0], filePath);
 
   // create binary map with theshold values
-  if ( userThresholds[1] == 0.5 && userThresholds[2] == 1e30 )
+  if ( userThresholds[1] == -1e30 && userThresholds[2] == 1e30 )
   {
     setUserThresholds(userThresholds);
   }
@@ -111,16 +116,18 @@ function processFile(file)
   {
     setOption("BlackBackground", true);
     run("Convert to Mask", "method=Default background=Dark black");
-    rescalePixelValues(NaN, NaN, 0.0, donorFactor);
+    rescalePixelValues(NaN, NaN, 0, 1);
   }
 
+  // apply scaling factor to donor classification (map)
+  run("Multiply...", "value=" + v2p(donorFactor));
+  
   // apply classification or binary map to recipient channels
   receptorChannelsLength = receptorChannels.length;
-  if ( receptorChannelsLength == 0 )
-    imageCalculator("Multiply create 32-bit stack", classifiedDonor,fileName);
-  else {
+  if ( receptorChannelsLength == 0 )  // apply to all channels
+    imageCalculator("Multiply 32-bit stack", fileName, classifiedDonor);
+  else  // apply to selected channels only
   {
-  	
   	fileSlicesLength = fileSlices.length;
 	for (i = 1; i <= fileSlicesLength; ++i)  // iterate through slices
 	{
@@ -131,8 +138,10 @@ function processFile(file)
 	    if ( slice == receptorChannels[j] ||
 	         slice.contains(toLowerCase(receptorChannels[j])  + " ") )  // matching pattern: "name "
 	    {
+	      selectWindow(fileName);  // needs to be here: timing issue with TWS image release
 	      setSlice(i);
-	      imageCalculator("Multiply 32-bit", classifiedDonor,fileName);
+	      run("Add...", "value=" + v2p(receptorOffset) + " slice");
+	      imageCalculator("Multiply 32-bit", fileName, classifiedDonor);
 	    }
 	  }
 	  
@@ -168,7 +177,7 @@ function getUserThresholds(thresholds)
   title =   "Finalize thresholds limits";
   message = "Set the limits in the Threshold window and\n" +
             "cover the background with the blue mask:\n" +
-            "Leave the white target regions unmasked.\n \n" +
+            "Leave the white sample regions unmasked.\n \n" +
             "The macro will apply the new thresholds,\n" +
             "upon confirming this dialog with OK,\n" +
             "but stop execution with Cancel.";
@@ -296,7 +305,8 @@ function setUserThresholds(thresholds)
   if ( thresholds[0] == false )  // check for custom values
     getUserThresholds(thresholds);
   setThreshold(thresholds[1], thresholds[2]);
-  thresholds[0] = true;
+  if ( thresholds[1] != -1e30 || thresholds[2] != 1e30 )  // user set thresholds
+    thresholds[0] = true;
   print("\tThresholds: " + thresholds[1] + " (lower), " + thresholds[2] + " (upper)");
 }
 
