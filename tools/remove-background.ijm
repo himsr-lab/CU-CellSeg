@@ -27,25 +27,25 @@
  *  Description:
  *
  *
- *  Removes the background (donor) contribution in multi-channel images from
+ *  Removes a background (donor) contribution in multi-channel images from
  *  sample (receptor) channels by scaling each sample channel pixel with the
  *  inverse of its background probability. The probability map is generated
  *  from a corresponding "Trainable Weka Segmentation" plugin model.
- *  The background-corrected receptor values for each given pixel R*[x,y]
+ *  The background-corrected receptor value R*[x,y] for each given pixel R[x,y]
  *  can be calculated using the following formula:
  *      
- *  R*[x,y] = (1 - (d * p(D[x,y])) * (R[x,y] - o)					(1)
+ *  R*[x,y] = (1 - (d * p(D[x,y])) * (R[x,y] - o)			(1)
  *
  *  The donor factor 'd' is a normalization factor that can be used to increase
  *  or decrease the background correction scaling. The scaling is based on the
- *  background probability 'p' derived from the donor channel 'D[x,y]'.
- *  In addition to the scaling, the receptor values can be manipulated by applying
+ *  background probability 'p', derived from the donor channel 'D[x,y]'.
+ *  In addition to the scaling, the receptor values can be corrected by applying
  *  the receptor offset 'o', which is applied before the scaling.
  *  As an alterntive to the background correction scaling, the donor probability
  *  map can be binarized by thresholding:
  *  In this case, all receptor values that fall within the background mask will
  *  be set to zero and all receptor values that fall within the sample mask
- *  will only be offset by the value 'o'.
+ *  will only be corrected by the offset 'o'.
  *  
  *  Dependencies:
  *
@@ -54,7 +54,7 @@
  *
  *  Version:
  *
- *  v1.00 (2021-10-19)
+ *  v1.00 (2021-10-20)
  */
 
 print("\\Clear");

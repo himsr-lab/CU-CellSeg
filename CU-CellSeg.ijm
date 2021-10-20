@@ -96,7 +96,7 @@ cellMatrixChannelsLength = cellMatrixChannels.length;
 targetGroups = newArray(1, 2, 3, 4, 5, 9);  // group ids for corresponding targets
 targetNames = newArray("nu", "ce", "me", "cy", "cm");  // labels for classes and file output
 targetCounts = initializeArray(targetNames.length, 0);  // regions of interest counts
-versionString = "CU-CellSeg v1.00 (2021-10-12)\n" +
+versionString = "CU-CellSeg v1.00 (2021-10-20)\n" +
                  libraryVersion;
 
 
@@ -150,7 +150,7 @@ function processFile(file, thresholds)
     toPixels = Math.round(1.0 / 0.5 * (pixelCalibration[1] + pixelCalibration[2]));
   print("\t Calibration: " + toPixels + " pixel per " + pixelCalibration[0]);
 
-  // create projections for nuclei and cellular matrix
+  // create projections and classifications for nuclei and cellular matrix
   projectedNuclei = projectStack(fileTitle, fileSlices, nucleiChannels, targetNames[0]);
   classifiedNuclei = classifyImage(projectedNuclei, targetNames[0], filePath);
   if ( cellMatrixChannelsLength > 0 )
