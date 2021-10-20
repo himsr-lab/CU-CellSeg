@@ -768,7 +768,7 @@ function segmentNucleiImage(image, thresholds, counts)
   selectWindow(image);
   run("Duplicate...", "title=" + v2p(output));
   setUserThresholds(targetNames[0], thresholds);
-  setOption("BlackBackground", true);
+  setOption("BlackBackground", true);  // don't invert LUT
   run("Convert to Mask", "method=Otsu background=Dark black");
   if ( nucleiFilling )
   {
