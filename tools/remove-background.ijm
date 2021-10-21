@@ -54,7 +54,7 @@
  *
  *  Version:
  *
- *  v1.00 (2021-10-20)
+ *  v1.00 (2021-10-21)
  */
 
 print("\\Clear");
@@ -66,7 +66,7 @@ donorChannels = newArray("gold");
 donorFactor = 1.0;
 receptorChannels = newArray(0);  // optional, all if not specified 
 receptorOffset = 0.0;
-userThresholds = newArray(false, 0.5, 1e30);  // default values
+userThresholds = newArray(false, -1e30, 1e30);  // default values
 targetNames = newArray("do");  // class label and file output
 suffixes = newArray(".tif", ".tiff");
 files = getFilesInFolder("Select the first TIFF of your dataset", suffixes);
@@ -101,17 +101,18 @@ function processFile(file)
   fileName = File.getName(file);
   fileSlices = readImage(file);
   fileTitle = getTitle();
-  
+
   // create donor classification
   projectedDonor = projectStack(fileTitle, fileSlices, donorChannels, targetNames[0]);
   classifiedDonor = classifyImage(projectedDonor, targetNames[0], filePath);
-  
+
   // projection and pixel classification incompatible with batch mode, safe from here
-//  toggleBatchMode(batchMode, false);
+  toggleBatchMode(batchMode, false);
 
   // create binary map with theshold values upon request
   setUserThresholds(userThresholds);
-  if ( userThresholds[0] == true )
+  if ( userThresholds[0] == true &&
+       userThresholds[1] != -1e30 && userThresholds[1] != 1e30 )
   {
     setOption("BlackBackground", true);  // don't invert LUT
     run("Convert to Mask", "method=Default background=Dark black");
@@ -147,13 +148,14 @@ function processFile(file)
 	}
   
   }
+  setSlice(nSlices());  // move channel slider to the right
 
   // save and clear run, free memory
   finalizeRun(filePath, fileName);
   freeMemory();
 
   // restore user interface and display results
-//  toggleBatchMode(batchMode, false);
+  toggleBatchMode(batchMode, false);
 }
 
 /*
@@ -202,14 +204,14 @@ function getUserThresholds(thresholds)
             "upon confirming this dialog with OK,\n" +
             "but stop execution with Cancel.";
   
-//  toggleBatchMode(batchMode, true);  // stay in batch mode, but show current image
+  toggleBatchMode(batchMode, true);  // stay in batch mode, but show current image
   run("Threshold...");
   call("ij.plugin.frame.ThresholdAdjuster.setMethod", "Default");  // preset Window defaults
   call("ij.plugin.frame.ThresholdAdjuster.setMode", "Over/Under");
   waitForUser(title, message);
   getThreshold(thresholds[1], thresholds[2]);
   run("Close");
-//  toggleBatchMode(batchMode, true);  // hide image and (re-)enter batch mode
+  toggleBatchMode(batchMode, true);  // hide image and (re-)enter batch mode
 }
 
 // Function to create a projected image from an image stack
@@ -293,8 +295,8 @@ function runWekaClassifier(image, target, path)
   run("Trainable Weka Segmentation");  // start the Trainable Weka Segmentatio plugin
   waitForWindow("Trainable Weka Segmentation");  // title contains changing version number
   call("trainableSegmentation.Weka_Segmentation.setFeature", "Entropy=true");
-  call("trainableSegmentation.Weka_Segmentation.changeClassName", "0", "receptor (sample)");
-  call("trainableSegmentation.Weka_Segmentation.changeClassName", "1", "donor (background)");
+  call("trainableSegmentation.Weka_Segmentation.changeClassName", "0", "sample (receptor)");
+  call("trainableSegmentation.Weka_Segmentation.changeClassName", "1", "background (donor)");
   if ( !File.exists(classifier) )  // classifier missing in folder
   {
     print("\tNo classifier file in dataset folder...");
