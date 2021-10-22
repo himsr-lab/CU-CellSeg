@@ -48,6 +48,14 @@ userThresholds = newArray(0.75, 1e30);  // upper and lower limit
 
 run("ROI Manager...");  // start before batch mode
 setBatchMode(true);
+images = getList("image.titles");
+imagesLength = images.length;
+for ( i = 0; i < imagesLength; ++i )  // focus Weka Segmentation window
+{
+  selectWindow(images[i]);
+  if ( startsWith(getTitle(), "Trainable Weka Segmentation") )
+    break;
+}
 Stack.getPosition(channel, slice, frame);
 call("trainableSegmentation.Weka_Segmentation.getProbability");
 waitForWindow("Probability maps");
@@ -59,7 +67,7 @@ setThreshold(userThresholds[0], userThresholds[1]);
 setOption("BlackBackground", true);
 run("Convert to Mask", "method=Otsu background=Dark black");
 if ( nucleiFilling )
-	run("Analyze Particles...", "size=10-Infinity pixel show=[Masks] include in_situ slice");
+  run("Analyze Particles...", "size=10-Infinity pixel show=[Masks] include in_situ slice");
 run("Watershed", "slice");
 run("Analyze Particles...", "size=10-Infinity pixel show=Masks clear add in_situ slice");
 close("Probability*");
