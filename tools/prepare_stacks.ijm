@@ -26,7 +26,7 @@
  *
  *  Description:
  *
- *  Extracts, normalizes, and projects channels from muli-channel images -
+ *  Extracts, projects, and normalizes channels from muli-channel images -
  *  single channels are saved in their corresponding channel folders and
  *  projected channels can be saved in the 'projectionTarget' folder, if the
  *  'projectionChannels' array contains at least one channel name or slice number.
