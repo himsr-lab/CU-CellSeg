@@ -54,7 +54,7 @@
  *
  *  Version:
  *
- *  v1.00 (2021-10-21)
+ *  v1.00 (2021-10-22)
  */
 
 print("\\Clear");
@@ -111,8 +111,7 @@ function processFile(file)
 
   // create binary map with theshold values upon request
   setUserThresholds(userThresholds);
-  if ( userThresholds[0] == true &&
-       userThresholds[1] != -1e30 && userThresholds[1] != 1e30 )
+  if ( userThresholds[1] != -1e30 || userThresholds[1] != 1e30 )
   {
     setOption("BlackBackground", true);  // don't invert LUT
     run("Convert to Mask", "method=Default background=Dark black");

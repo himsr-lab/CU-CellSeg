@@ -62,9 +62,9 @@ waitForWindow("Probability maps");
 selectWindow("Probability maps");
 run("Duplicate...", "title=Probability duplicate channels=1");
 setBatchMode("hide");
-setThreshold(userThresholds[0], userThresholds[1]);
-if ( userThresholds[0] != -1e30 && userThresholds[1] != 1e30 )
+if ( userThresholds[0] != -1e30 || userThresholds[1] != 1e30 )
 {
+  setThreshold(userThresholds[0], userThresholds[1]);
   setOption("BlackBackground", true);  // don't invert LUT
   run("Convert to Mask", "method=Default background=Dark black");
   rescalePixelValues(NaN, NaN, 0, 1);
