@@ -40,11 +40,11 @@
  *
  *  Version:
  *
- *  v1.00 (2021-10-08)
+ *  v1.00 (2021-10-22)
  */
 
 nucleiFilling = false;  // fixes nuclei with darker centers
-userThreshold = newArray(0.75, 1e30);  // upper and lower limit
+userThresholds = newArray(0.75, 1e30);  // upper and lower limit
 
 run("ROI Manager...");  // start before batch mode
 setBatchMode(true);
@@ -55,7 +55,7 @@ selectWindow("Probability maps");
 run("Duplicate...", "title=Probability duplicate channels=1");
 setSlice(slice);
 setBatchMode("hide");
-setThreshold(userThreshold[0], userThreshold[1]);
+setThreshold(userThresholds[0], userThresholds[1]);
 setOption("BlackBackground", true);
 run("Convert to Mask", "method=Otsu background=Dark black");
 if ( nucleiFilling )
