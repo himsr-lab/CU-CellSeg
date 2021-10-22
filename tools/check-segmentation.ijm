@@ -48,14 +48,7 @@ userThresholds = newArray(0.75, 1e30);  // upper and lower limit
 
 run("ROI Manager...");  // start before batch mode
 setBatchMode(true);
-images = getList("image.titles");
-imagesLength = images.length;
-for ( i = 0; i < imagesLength; ++i )  // focus Weka Segmentation window
-{
-  selectWindow(images[i]);
-  if ( startsWith(getTitle(), "Trainable Weka Segmentation") )
-    break;
-}
+focusWindow("Trainable Weka Segmentation");
 Stack.getPosition(channel, slice, frame);
 call("trainableSegmentation.Weka_Segmentation.getProbability");
 waitForWindow("Probability maps");

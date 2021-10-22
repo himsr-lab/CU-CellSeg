@@ -28,8 +28,8 @@
  *
  *  Creates the probability map in the "Trainable Weka Segmentation" plugin and
  *  and multiplies it with the 'donorFactor'. In a second step, the currently
- *  selected channel of the last image in the "Window" list is corrected by the
- *  'receptorOffset' and then multiplied with the scaled probablity map.
+ *  selected channel of the last image in the "Window" list is corrected by the
+ *  'receptorOffset' and then multiplied with the scaled probablity map.
  *  The result is a background-corrected view of the currently selected channel
  *  of the last-opened multi-channel image.
  *
@@ -49,14 +49,7 @@ userThresholds = newArray(-1e30, 1e30);  // default values
 
 setBatchMode(true);
 close("Background-corrected");
-images = getList("image.titles");
-imagesLength = images.length;
-for ( i = 0; i < imagesLength; ++i )  // focus Weka Segmentation window
-{
-  selectWindow(images[i]);
-  if ( startsWith(getTitle(), "Trainable Weka Segmentation") )
-    break;
-}
+focusWindow("Trainable Weka Segmentation");
 call("trainableSegmentation.Weka_Segmentation.getProbability");
 waitForWindow("Probability maps");
 selectWindow("Probability maps");
