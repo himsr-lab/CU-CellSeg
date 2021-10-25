@@ -122,6 +122,7 @@ function processFile(file)
   run("Multiply...", "value=" + v2p(donorFactor));
   
   // apply classification or binary map to recipient channels
+  toggleBatchMode(batchMode, true);  // make probability map availabe for 'imageCalculator'
   receptorChannelsLength = receptorChannels.length;
   if ( receptorChannelsLength == 0 )  // apply to all channels
     imageCalculator("Multiply 32-bit stack", fileName, classifiedDonor);
@@ -147,6 +148,7 @@ function processFile(file)
 	}
   
   }
+  toggleBatchMode(batchMode, true);
   setSlice(nSlices());  // move channel slider to the right
 
   // save and clear run, free memory
