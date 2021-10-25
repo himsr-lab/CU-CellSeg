@@ -40,7 +40,7 @@
  *
  *  Version:
  *
- *  v1.00 (2021-10-22)
+ *  v1.00 (2021-10-25)
  */
 
 donorFactor = 1.0;
@@ -49,6 +49,8 @@ userThresholds = newArray(-1e30, 1e30);  // default values
 
 setBatchMode(true);
 close("Background-corrected");
+images = getList("image.titles");
+imagesLength = images.length;
 focusWindow("Trainable Weka Segmentation");
 call("trainableSegmentation.Weka_Segmentation.getProbability");
 waitForWindow("Probability maps");
