@@ -40,7 +40,7 @@
  *
  *  Version:
  *
- *  v1.00 (2021-10-25)
+ *  v1.00 (2021-10-26)
  */
 
 donorFactor = 1.0;
@@ -48,9 +48,8 @@ receptorOffset = 0.0;
 userThresholds = newArray(-1e30, 1e30);  // default values
 
 setBatchMode(true);
-close("Background-corrected");
-images = getList("image.titles");
-imagesLength = images.length;
+close("(no-bg) *");
+image = getTitle();  // selected source image or TWSP window content
 focusWindow("Trainable Weka Segmentation");
 call("trainableSegmentation.Weka_Segmentation.getProbability");
 waitForWindow("Probability maps");
@@ -65,11 +64,14 @@ if ( userThresholds[0] != -1e30 || userThresholds[1] != 1e30 )
   rescalePixelValues(NaN, NaN, 0, 1);
 }
 run("Multiply...", "value=" + v2p(donorFactor));
-selectWindow(images[imagesLength - 1]);  // select last image
+selectWindow(image);
 slice = getSliceNumber();
 label = getInfo("slice.label");
-run("Duplicate...", "title=Background-corrected channels=" + v2p(slice));
+if ( label == "" )  // label missing, report slice number
+  label = slice;
+output = "(no-bg) " + label;
+run("Duplicate...", "title=" + v2p(output) + " channels=" + v2p(slice));
 run("Add...", "value=" + v2p(receptorOffset) + " slice");
-imageCalculator("Multiply 32-bit", "Background-corrected", "Probability");
+imageCalculator("Multiply 32-bit", output, "Probability");
 close("Probability*");
 setBatchMode(false);
