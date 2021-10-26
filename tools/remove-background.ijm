@@ -54,7 +54,7 @@
  *
  *  Version:
  *
- *  v1.00 (2021-10-25)
+ *  v1.00 (2021-10-26)
  */
 
 print("\\Clear");
@@ -181,7 +181,7 @@ function finalizeRun(path, name)
   print("\n*** Saving results to files ***");
 
   label = File.getNameWithoutExtension(name);
-  directory = path + File.separator + "background-corrected";  // create subfolder for result files
+  directory = path + File.separator + "no-bg";  // create subfolder for result files
   File.makeDirectory(directory);
   result = directory + File.separator + label;  // generic full result path (without extension)
   selectWindow(name);
