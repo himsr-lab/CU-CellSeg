@@ -75,3 +75,4 @@ run("Add...", "value=" + v2p(receptorOffset) + " slice");
 imageCalculator("Multiply 32-bit", output, "Probability");
 close("Probability*");
 setBatchMode(false);
+
