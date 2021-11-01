@@ -33,7 +33,7 @@
  *  from a corresponding "Trainable Weka Segmentation" plugin model.
  *  The background-corrected receptor value R*[x,y] for each given pixel R[x,y]
  *  can be calculated using the following formula:
- *      
+ *
  *  R*[x,y] = (1 - (d * p(D[x,y])) * (R[x,y] - o)			(1)
  *
  *  The donor factor 'd' is a normalization factor that can be used to increase
@@ -46,7 +46,7 @@
  *  In this case, all receptor values that fall within the background mask will
  *  be set to zero and all receptor values that fall within the sample mask
  *  will only be corrected by the offset 'o'.
- *  
+ *
  *  Dependencies:
  *
  *  CU-CellSeg requires a recent version of CU-MacroLibrary to be installed:
@@ -64,7 +64,7 @@ run("Bio-Formats Macro Extensions");
 batchMode = true;
 donorChannels = newArray("gold");
 donorFactor = 1.0;
-receptorChannels = newArray(0);  // optional, all if not specified 
+receptorChannels = newArray(0);  // optional, all if not specified
 receptorOffset = 0.0;
 userThresholds = newArray(false, -1e30, 1e30);  // default values
 targetNames = newArray("do");  // class label and file output
@@ -120,7 +120,7 @@ function processFile(file)
 
   // apply donor factor to donor classification
   run("Multiply...", "value=" + v2p(donorFactor));
-  
+
   // apply classification or binary map to recipient channels
   toggleBatchMode(batchMode, true);  // make probability map availabe for 'imageCalculator'
   receptorChannelsLength = receptorChannels.length;
@@ -128,25 +128,25 @@ function processFile(file)
     imageCalculator("Multiply 32-bit stack", fileName, classifiedDonor);
   else  // apply to selected channels only
   {
-  	fileSlicesLength = fileSlices.length;
-	for (i = 1; i <= fileSlicesLength; ++i)  // iterate through slices
-	{
-	
-	  for (j = 0; j < receptorChannelsLength; ++j)  // match slice names with channels
-	  {
-	    slice = toLowerCase(fileSlices[i - 1]);  // label pattern: "#" or "name (channel/mass)"
-	    if ( slice == receptorChannels[j] ||
-	         slice.contains(toLowerCase(receptorChannels[j])  + " ") )  // matching pattern: "name "
-	    {
-	      selectWindow(fileName);  // needs to be here: timing issue with TWS image release
-	      setSlice(i);
-	      run("Add...", "value=" + v2p(receptorOffset) + " slice");
-	      imageCalculator("Multiply 32-bit", fileName, classifiedDonor);
-	    }
-	  }
-	  
-	}
-  
+    fileSlicesLength = fileSlices.length;
+    for (i = 1; i <= fileSlicesLength; ++i)  // iterate through slices
+    {
+
+      for (j = 0; j < receptorChannelsLength; ++j)  // match slice names with channels
+      {
+        slice = toLowerCase(fileSlices[i - 1]);  // label pattern: "#" or "name (channel/mass)"
+        if ( slice == receptorChannels[j] ||
+             slice.contains(toLowerCase(receptorChannels[j])  + " ") )  // matching pattern: "name "
+        {
+          selectWindow(fileName);  // needs to be here: timing issue with TWS image release
+          setSlice(i);
+          run("Add...", "value=" + v2p(receptorOffset) + " slice");
+          imageCalculator("Multiply 32-bit", fileName, classifiedDonor);
+        }
+      }
+
+    }
+
   }
   toggleBatchMode(batchMode, true);
   setSlice(nSlices());  // move channel slider to the right
@@ -204,7 +204,7 @@ function getUserThresholds(thresholds)
             "The macro will apply the new thresholds,\n" +
             "upon confirming this dialog with OK,\n" +
             "but stop execution with Cancel.";
-  
+
   toggleBatchMode(batchMode, true);  // stay in batch mode, but show current image
   run("Threshold...");
   call("ij.plugin.frame.ThresholdAdjuster.setMethod", "Default");  // preset Window defaults
@@ -292,7 +292,7 @@ function runWekaClassifier(image, target, path)
             "The macro will save the new classifier,\n" +
             "upon confirming this dialog with OK,\n" +
             "but stop execution with Cancel.";
-  
+
   run("Trainable Weka Segmentation");  // start the Trainable Weka Segmentatio plugin
   waitForWindow("Trainable Weka Segmentation");  // title contains changing version number
   call("trainableSegmentation.Weka_Segmentation.setFeature", "Entropy=true");
@@ -311,7 +311,7 @@ function runWekaClassifier(image, target, path)
   waitForWindow("Probability maps");  // computation time machine-dependent
   close("Trainable Weka Segmentation*");  // title changes with version
   renameImage("", output);
-  
+
   while ( nSlices() > 1 )  // use only first probability map
   {
     setSlice(nSlices());
@@ -331,4 +331,3 @@ function setUserThresholds(thresholds)
   thresholds[0] = true;
   print("\tThresholds: " + thresholds[1] + " (lower), " + thresholds[2] + " (upper)");
 }
-
