@@ -96,7 +96,7 @@ cellMatrixChannelsLength = cellMatrixChannels.length;
 targetGroups = newArray(1, 2, 3, 4, 5, 9);  // group ids for corresponding targets
 targetNames = newArray("nu", "ce", "me", "cy", "cm");  // labels for classes and file output
 targetCounts = initializeArray(targetNames.length, 0);  // regions of interest counts
-versionString = "CU-CellSeg v1.00 (2021-10-20)\n" +
+versionString = "CU-CellSeg v1.00 (2021-11-10)\n" +
                  libraryVersion;
 
 
@@ -348,7 +348,7 @@ function createCompartments(target, counts)
   else
   {
     RoiManager.selectGroup(targetGroups[4]);  // cell matrix
-    counts[4] = RoiManager.selected(); 
+    counts[4] = RoiManager.selected();
     print("\tCounts: " + counts[0] + " (" + target[0] + "), "
                        + counts[1] + " (" + target[1] + "), "
                        + counts[4] + " (" + target[4] + ")");
@@ -420,7 +420,7 @@ function finalizeRun(path, name, image)
   tifFile = result + ".tif";
   print("\tWriting: " + tifFile);
   waitForFileDeletion(tifFile);
-  run("Bio-Formats Exporter", "save=[" + tifFile + "] export compression=LZW");
+  run("Bio-Formats Exporter", "save=[" + tifFile + "] export compression=zlib");
   Ext.close();  // close active Bio-Formats dataset
   txtFile = result + ".txt";
   print("\tWriting: " + txtFile);
@@ -439,7 +439,7 @@ function getUserThresholds(target, thresholds)
             "The macro will apply the new thresholds,\n" +
             "upon confirming this dialog with OK,\n" +
             "but stop execution with Cancel.";
-  
+
   toggleBatchMode(batchMode, true);  // stay in batch mode, but show current image
   run("Threshold...");
   call("ij.plugin.frame.ThresholdAdjuster.setMethod", "Otsu");  // preset Window defaults
@@ -691,7 +691,7 @@ function runWekaClassifier(image, target, path)
             "The macro will save the new classifier,\n" +
             "upon confirming this dialog with OK,\n" +
             "but stop execution with Cancel.";
-  
+
   run("Trainable Weka Segmentation");  // start the Trainable Weka Segmentatio plugin
   waitForWindow("Trainable Weka Segmentation");  // title contains changing version number
   call("trainableSegmentation.Weka_Segmentation.setFeature", "Entropy=true");
