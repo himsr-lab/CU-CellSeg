@@ -41,7 +41,7 @@
  *
  *  Version:
  *
- *  v1.00 (2021-10-08)
+ *  v1.00 (2021-11-11)
  */
 
 print("\\Clear");
@@ -81,7 +81,7 @@ function processFile(file)
   fileName = File.getName(file);
   fileSlices = readImage(file);
   fileTitle = getTitle();
-  
+
   if ( projectionChannels.length > 0 )
   {
     // create projections from grouped slices
@@ -89,8 +89,8 @@ function processFile(file)
     selectWindow(projectedChannels);
     normalizePixelValues();
     finalizeRun(filePath, fileName, projectionTarget);
-  }  
-  
+  }
+
   // create images from individual slices
   fileSlicesLength = fileSlices.length;
   for ( i = 0; i < fileSlicesLength; ++i )
@@ -100,10 +100,10 @@ function processFile(file)
     normalizePixelValues();
     finalizeRun(filePath, fileName, fileSlices[i]);
   }
-  
+
   // close active Bio-Formats dataset
   Ext.close();
-  close("*"); 
+  close("*");
 
   toggleBatchMode(true, false);
 }
@@ -118,7 +118,7 @@ function finalizeRun(path, name, channel)
   tifFile = result + ".tif";
   print("\tWriting: " + tifFile);
   waitForFileDeletion(tifFile);
-  run("Bio-Formats Exporter", "save=[" + tifFile + "] export compression=LZW");
+  run("Bio-Formats Exporter", "save=[" + tifFile + "] export compression=zlib");
   close();
 }
 
