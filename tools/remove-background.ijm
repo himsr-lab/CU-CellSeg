@@ -26,7 +26,6 @@
  *
  *  Description:
  *
- *
  *  Removes a background (donor) contribution in multi-channel images from
  *  sample (receptor) channels by scaling each sample channel pixel with the
  *  inverse of its background probability. The probability map is generated
