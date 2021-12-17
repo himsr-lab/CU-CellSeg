@@ -96,7 +96,7 @@ cellMatrixChannelsLength = cellMatrixChannels.length;
 targetGroups = newArray(1, 2, 3, 4, 5, 9);  // group ids for corresponding targets
 targetNames = newArray("nu", "ce", "me", "cy", "cm");  // labels for classes and file output
 targetCounts = initializeArray(targetNames.length, 0);  // regions of interest counts
-versionString = "CU-CellSeg v1.00 (2021-11-10)\n" +
+versionString = "CU-CellSeg v1.00 (2021-12-17)\n" +
                  libraryVersion;
 
 
@@ -500,10 +500,6 @@ function matchNucleiWithCells(target, counts)
   {
     found = false;  // track matching of nucleus with cell
     overlap = false;  // track overlap of nucleus with cell
-    roiManager("select", n);
-    Roi.getBounds(nu_x, nu_y, nu_width, nu_height)  // bounding rectangle of nucleus
-    Roi.getContainedPoints(nu_xx, nu_yy);  // pixels inside nucleus
-    nu_xx_length = nu_xx.length;
 
     if ( n > offset )  // jump ahead to cell in list proximity
       c = n - offset;
@@ -514,12 +510,11 @@ function matchNucleiWithCells(target, counts)
       if ( matched[c] == false )  // cell not yet matched
       {
         i = nuclei + c; // absolute cell index for list of rois
-        roiManager("select", i);
-        Roi.getBounds(ce_x, ce_y, ce_width, ce_height)  // bounding rectangle of cell
-        if ( nu_x >= ce_x && nu_x <= (ce_x + ce_width) &&
-             nu_y >= ce_y && nu_y <= (ce_y + ce_height) )  // fast approximation of nucleus location
+        if ( isInBounds(i, n) )  // fast approximation of nucleus location
         {
           overlap = true;  // bounding box indicates possible overlap, now checking in-depth (slow)
+          Roi.getContainedPoints(nu_xx, nu_yy);  // pixels inside nucleus
+          nu_xx_length = nu_xx.length;
           for (p = 0; ( overlap == true ) && ( p < nu_xx_length ); ++p)  // iterate through nucleus pixels
           {
             if ( !Roi.contains(nu_xx[p], nu_yy[p]) )  // nucleus pixel outside cell
