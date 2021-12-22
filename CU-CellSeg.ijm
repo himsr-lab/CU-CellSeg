@@ -93,10 +93,11 @@ nucleiContraction = 0.0;  // nuclei masks contraction [units]
 // advanced user settings
 batchMode = true;  // speed up processing by limiting visual output
 cellMatrixChannelsLength = cellMatrixChannels.length;
+cellsFolder = "cells";  // destination subfolder for results files
 targetGroups = newArray(1, 2, 3, 4, 5, 9);  // group ids for corresponding targets
 targetNames = newArray("nu", "ce", "me", "cy", "cm");  // labels for classes and file output
 targetCounts = initializeArray(targetNames.length, 0);  // regions of interest counts
-versionString = "CU-CellSeg v1.00 (2021-12-17)\n" +
+versionString = "CU-CellSeg v1.00 (2021-12-21)\n" +
                  libraryVersion;
 
 
@@ -399,9 +400,11 @@ function finalizeRun(path, name, image)
   print("\n*** Saving results to files ***");
 
   label = File.getNameWithoutExtension(name);
-  directory = path + File.separator + label;  // create subfolder for result files
+  directory = path + File.separator + label;  // create folder for result files
   File.makeDirectory(directory);
-  result = directory + File.separator + label;  // generic full result path (without extension)
+  folder = directory + File.separator + cellsFolder;  // create subfolder for result files
+  File.makeDirectory(folder);
+  result = folder + File.separator + label;  // generic full result path (without extension)
   zipFile = result + ".zip";
   print("\tWriting: " + zipFile);
   waitForFileDeletion(zipFile);
@@ -513,8 +516,10 @@ function matchNucleiWithCells(target, counts)
         if ( isInBounds(i, n) )  // fast approximation of nucleus location
         {
           overlap = true;  // bounding box indicates possible overlap, now checking in-depth (slow)
+          roiManager("select", n);
           Roi.getContainedPoints(nu_xx, nu_yy);  // pixels inside nucleus
           nu_xx_length = nu_xx.length;
+          roiManager("select", i);
           for (p = 0; ( overlap == true ) && ( p < nu_xx_length ); ++p)  // iterate through nucleus pixels
           {
             if ( !Roi.contains(nu_xx[p], nu_yy[p]) )  // nucleus pixel outside cell
