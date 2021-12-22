@@ -97,7 +97,7 @@ cellsFolder = "cells";  // destination subfolder for results files
 targetGroups = newArray(1, 2, 3, 4, 5, 9);  // group ids for corresponding targets
 targetNames = newArray("nu", "ce", "me", "cy", "cm");  // labels for classes and file output
 targetCounts = initializeArray(targetNames.length, 0);  // regions of interest counts
-versionString = "CU-CellSeg v1.00 (2021-12-21)\n" +
+versionString = "CU-CellSeg v1.00 (2021-12-22)\n" +
                  libraryVersion;
 
 
@@ -513,29 +513,15 @@ function matchNucleiWithCells(target, counts)
       if ( matched[c] == false )  // cell not yet matched
       {
         i = nuclei + c; // absolute cell index for list of rois
-        if ( isInBounds(i, n) )  // fast approximation of nucleus location
+        if ( isInBounds(i, n) && isInRegion(i, n) )  // lazy evaluation
         {
-          overlap = true;  // bounding box indicates possible overlap, now checking in-depth (slow)
-          roiManager("select", n);
-          Roi.getContainedPoints(nu_xx, nu_yy);  // pixels inside nucleus
-          nu_xx_length = nu_xx.length;
-          roiManager("select", i);
-          for (p = 0; ( overlap == true ) && ( p < nu_xx_length ); ++p)  // iterate through nucleus pixels
-          {
-            if ( !Roi.contains(nu_xx[p], nu_yy[p]) )  // nucleus pixel outside cell
-              overlap = false;
-          }
-
-          if ( overlap ) // full overlap
-          {
-            regionID = toString(n + 1) + ":";  // avoid "NaN" error with preceeding numeric value
-            renameRegion(n, regionID + targetNames[0]);
-            RoiManager.setGroup(targetGroups[0]);  // nucleus, paired with cell
-            found = true;
-            renameRegion(i, regionID + targetNames[1]);
-            RoiManager.setGroup(targetGroups[1]);  // cell, matched with nucleus
-            matched[c] = true;
-          }
+          regionID = toString(n + 1) + ":";  // avoid "NaN" error with preceeding numeric value
+          renameRegion(n, regionID + targetNames[0]);
+          RoiManager.setGroup(targetGroups[0]);  // nucleus, paired with cell
+          found = true;
+          renameRegion(i, regionID + targetNames[1]);
+          RoiManager.setGroup(targetGroups[1]);  // cell, matched with nucleus
+          matched[c] = true;
         }
       }
       c = ( c + 1 ) % cells;
