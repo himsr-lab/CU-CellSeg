@@ -1,0 +1,139 @@
+
+[2021-12-23, 13:5:26]
+ImageJ2 v1.53n99
+CU-CellSeg v1.00 (2021-12-22)
+CU-MacroLibrary v1.00 (2021-12-22)
+
+*** Processing file ***
+	C:\Users\HIMSR staff\Desktop\Chris\CU-CellSeg (test)\20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil.tiff
+Warning: Data has too many channels for Default color mode
+	1.) beta-tubulin (113)
+	2.) CD11c (144)
+	3.) CD14 (154)
+	4.) CD163 (142)
+	5.) CD20 (167)
+	6.) CD3 (159)
+	7.) CD31 (152)
+	8.) CD4 (143)
+	9.) CD45 (175)
+	10.) CD45RO (161)
+	11.) CD56 (151)
+	12.) CD68 (156)
+	13.) CD8 (158)
+	14.) dsDNA (89)
+	15.) FOXP3 (146)
+	16.) Granzyme B (150)
+	17.) HLA class 1 A, B, and C (176)
+	18.) HLA DR (172)
+	19.) Keratin (165)
+	20.) Ki-67 (153)
+	21.) PD-1 (148)
+	22.) PD-L1 (149)
+	23.) Vimentin (163)
+	 Calibration: 2 pixel per microns
+
+*** Projecting nu image ***
+	Channels: "14" (nu)
+
+*** Classifying nu image ***
+	Initial median pixel value: 10
+	Updated median pixel value: 1
+Warning: at least one dimension of the image is larger than 1024 pixels.
+Feature stack creation and classifier training might take some time depending on your computer.
+ 
+	Using classifier found in dataset folder...
+Loading Weka classifier from C:/Users/HIMSR staff/Desktop/Chris/CU-CellSeg (test)/nu.model...
+Field of view: max sigma = 16.0, min sigma = 0.0
+Membrane thickness: 1, patch size: 19
+Read class name: nuclei
+Read class name: uncertain
+Read class name: background
+Read header from C:/Users/HIMSR staff/Desktop/Chris/CU-CellSeg (test)/nu.model (number of attributes = 97)
+Loaded C:/Users/HIMSR staff/Desktop/Chris/CU-CellSeg (test)/nu.model
+Calculating probability maps...
+Creating feature stack...
+Updating features of slice number 1...
+Feature stack array is now updated (1 slice(s) with 96 features, took 57447ms).
+Classifying whole image using 28 thread(s)...
+Classifying whole image data took: 4856ms
+Finished segmentation of whole image.
+ 
+Done
+
+*** Projecting ce image ***
+	Channels: "1" (ce)
+
+*** Classifying ce image ***
+	Initial median pixel value: 4
+	Updated median pixel value: 1
+Warning: at least one dimension of the image is larger than 1024 pixels.
+Feature stack creation and classifier training might take some time depending on your computer.
+ 
+	Using classifier found in dataset folder...
+Loading Weka classifier from C:/Users/HIMSR staff/Desktop/Chris/CU-CellSeg (test)/ce.model...
+Field of view: max sigma = 16.0, min sigma = 0.0
+Membrane thickness: 1, patch size: 19
+Read class name: cell matrix
+Read class name: uncertain
+Read class name: background
+Read header from C:/Users/HIMSR staff/Desktop/Chris/CU-CellSeg (test)/ce.model (number of attributes = 77)
+Loaded C:/Users/HIMSR staff/Desktop/Chris/CU-CellSeg (test)/ce.model
+Calculating probability maps...
+Creating feature stack...
+Updating features of slice number 1...
+Feature stack array is now updated (1 slice(s) with 76 features, took 17359ms).
+Classifying whole image using 28 thread(s)...
+Classifying whole image data took: 5230ms
+Finished segmentation of whole image.
+ 
+Done
+	Minimizing ROI Manager...
+	Entering batch mode...
+
+*** Segmenting nuclei image ***
+	Minimum nucleus size: 2.5 microns²
+	Thresholds: 0.75 (lower), 1.0000E30 (upper)
+	Nuclei filling: False
+	Counts: 23767 (nuclei)
+
+*** Creating nuclei distance map ***
+	Nuclei distances: 0 microns (min), 13 microns (max)
+
+*** Creating cytoplasm distance mask ***
+	Cell expansion limit: 100 microns
+
+*** Simulating cellular matrix image ***
+	Cell expansion: 1.5 microns
+
+*** Masking cytoplasm image ***
+
+*** Combining nuclei with cellular matrix ***
+
+*** Segmenting cellular matrix image ***
+	Minimum cell size: 2.5 microns²
+	Thresholds: 24575.25 (lower), 1.0000E30 (upper)
+	Counts: 23767 (cells)
+
+*** Matching nuclei with cells ***
+	This might take a while...
+	Counts: 23767 (nu), 23767 (ce), 0 (-)
+
+*** Creating cellular compartments ***
+	This might take a while...
+	Cell contraction: 0 microns
+	Membrane width: 0 microns
+	Nuclei contraction: 0 microns
+	Counts: 23767 (nu), 23767 (ce), 23731 (cm)
+
+*** Rendering cellular compartments image ***
+
+*** Measuring regions of interest ***
+	This might take a while...
+
+*** Saving results to files ***
+	Writing: C:/Users/HIMSR staff/Desktop/Chris/CU-CellSeg (test)/\20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil\cells\20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil.zip
+	Writing: C:/Users/HIMSR staff/Desktop/Chris/CU-CellSeg (test)/\20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil\cells\20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil.csv
+	Writing: C:/Users/HIMSR staff/Desktop/Chris/CU-CellSeg (test)/\20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil\cells\20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil.tif
+	Writing: C:/Users/HIMSR staff/Desktop/Chris/CU-CellSeg (test)/\20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil\cells\20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil.txt
+
+[2021-12-23, 13:20:13]

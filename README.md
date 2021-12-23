@@ -26,10 +26,10 @@ The [example folder](https://github.com/christianrickert/CU-CellSeg/tree/main/ex
 Running CU-CellSeg with the default [`userThresholds`](https://github.com/christianrickert/CU-CellSeg/blob/main/CU-CellSeg.ijm#L80) and with the [`cellMatrixChannels`](https://github.com/christianrickert/CU-CellSeg/blob/main/CU-CellSeg.ijm#L83) variable set to `newArray("beta-tubulin")`, should yield results similar (within numerical precision limits) to the data in the [results subfolder](https://github.com/christianrickert/CU-CellSeg/tree/main/example/20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil). However, the measurements table (>500 MiB) has been compressed with [7-zip](https://www.7-zip.org/download.html) before uploading.
 
 CU-CellSeg produces distinct result files for every multi-channel image in the batch:
-* `*.csv` - [measurements table](https://github.com/christianrickert/CU-CellSeg/blob/main/example/20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil/20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil.7z?raw=true)
-* `*.tif` - [overview image](https://github.com/christianrickert/CU-CellSeg/blob/main/example/20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil/20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil.tif?raw=true)
-* `*.txt` - [log file](https://github.com/christianrickert/CU-CellSeg/blob/main/example/20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil/20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil.txt)
-* `*.zip` - [rois](https://github.com/christianrickert/CU-CellSeg/blob/main/example/20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil/20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil.zip?raw=true)
+* `*.csv` - [measurements table](https://github.com/christianrickert/CU-CellSeg/blob/main/example/20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil/cells/20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil.7z?raw=true)
+* `*.tif` - [overview image](https://github.com/christianrickert/CU-CellSeg/blob/main/example/20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil/cells/20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil.tif?raw=true)
+* `*.txt` - [log file](https://github.com/christianrickert/CU-CellSeg/blob/main/example/20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil/cells/20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil.txt)
+* `*.zip` - [rois](https://github.com/christianrickert/CU-CellSeg/blob/main/example/20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil/cells/20200109_3232_Run-16_FOV1_Final_3232_Top_R3C1_Tonsil.zip?raw=true)
 
 ### Copyright notices
 The [MIBIscope™ image](https://mibi-share.ionpath.com/tracker/overlay/sets/16/116) was kindly provided by Ionpath for demonstration purposes.
