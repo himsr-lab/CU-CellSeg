@@ -56,7 +56,7 @@ fileSuffixes = newArray(".tif", ".tiff");
 files = getFilesInFolder("Select the first TIFF of your dataset", fileSuffixes);
 regionFolder = "regions";
 roiSuffixes = newArray(".roi", ".zip");
-versionString = "v1.00 (2021-12-21)";
+versionString = "v1.00 (2021-01-25)";
 processFolder(files);
 
 
@@ -120,7 +120,7 @@ function processFile(file)
 
   // load regions of interest (cell segments)
   cellPath = filePath + File.separator + fileLabel + File.separator + cellFolder;
-  print("\t" + regionPath);
+  print("\t" + cellPath);
   objects = getFileList(cellPath);  // files and folders
   objectsLength = objects.length;
   for (i = 0; i < objectsLength; ++i)  // cell segments in folder
