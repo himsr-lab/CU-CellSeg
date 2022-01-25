@@ -188,7 +188,7 @@ function finalizeRun(path, name)
   tifFile = result + ".tif";
   print("\tWriting: " + tifFile);
   waitForFileDeletion(tifFile);
-  run("Bio-Formats Exporter", "save=[" + tifFile + "] export compression=LZW");
+  run("Bio-Formats Exporter", "save=[" + tifFile + "] export compression=zlib");
   Ext.close();  // close active Bio-Formats dataset
   printDateTimeStamp();
 }
