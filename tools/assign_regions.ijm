@@ -28,7 +28,7 @@
  *
  *  First loads all regions of interest with tissue segments from the regions folder and
  *  then loads all regions of interest with cell segmentation data from hte cells folder.
- *  Using the Roi Manager, the macro calculates the relative overlap (percentage) between
+ *  Using the ROI Manager, the macro calculates the relative overlap (percentage) between
  *  the tissue segments and the cellular compartments. The results are stored in a table
  *  and finally exported to a comma-separated value file in the regions folder.
  *  Please organize your data in the following file system structure:
