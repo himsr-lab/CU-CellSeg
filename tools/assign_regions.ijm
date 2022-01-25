@@ -81,6 +81,7 @@ function processFile(file)
 
   // prepare next run
   initializeRun(versionString);
+  clearAllSelections();
 
   // print current file name
   print("\n*** Processing file ***");
@@ -159,7 +160,6 @@ function processFile(file)
   csvFile = regionPath + File.separator + regionFolder + ".csv";
   waitForFileDeletion(csvFile);
   Table.save(csvFile);
-  clearAllSelections();
   printDateTimeStamp();
   freeMemory();
 
