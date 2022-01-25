@@ -53,7 +53,7 @@
  *
  *  Version:
  *
- *  v1.00 (2021-10-26)
+ *  v1.00 (2022-01-25)
  */
 
 print("\\Clear");
@@ -66,7 +66,7 @@ donorFactor = 1.0;
 receptorChannels = newArray(0);  // optional, all if not specified
 receptorOffset = 0.0;
 userThresholds = newArray(false, -1e30, 1e30);  // default values
-targetNames = newArray("do");  // class label and file output
+targetName = "do";  // class label and file output
 suffixes = newArray(".tif", ".tiff");
 files = getFilesInFolder("Select the first TIFF of your dataset", suffixes);
 processFolder(files);
@@ -102,8 +102,8 @@ function processFile(file)
   fileTitle = getTitle();
 
   // create donor classification
-  projectedDonor = projectStack(fileTitle, fileSlices, donorChannels, targetNames[0]);
-  classifiedDonor = classifyImage(projectedDonor, targetNames[0], filePath);
+  projectedDonor = projectStack(fileTitle, fileSlices, donorChannels, targetName);
+  classifiedDonor = classifyImage(projectedDonor, targetName, filePath);
 
   // projection and pixel classification incompatible with batch mode, safe from here
   toggleBatchMode(batchMode, false);
