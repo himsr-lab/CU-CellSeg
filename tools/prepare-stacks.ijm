@@ -154,6 +154,19 @@ function projectStack(image, slices, channels, target)
 
   }
 
+  // print matching slice numbers
+  stackSelectionLength = stackSelection.length;
+  if ( stackSelectionLength == 0 )
+    print("\tNo matching slices");
+  else
+  {
+    if ( stackSelectionLength == 1 )
+      print("\tMatching slice:");
+    else
+      print("\tMatching slices:");
+    Array.print(stackSelection);
+  }
+
   // extract matching slice labels for projection
   run("Duplicate...", "title=" + v2p("stack-" + target) + " duplicate");
 
@@ -172,7 +185,6 @@ function projectStack(image, slices, channels, target)
     close("stack-*");  // close projection stack
   }
   renameImage("", output);
-  print("\tTarget: \"" + target + "\", Slices:");
-  Array.print(stackSelection);
+
   return output;
 }
