@@ -629,7 +629,7 @@ function projectStack(image, slices, channels, target)
     close("stack-*");  // close projection stack
   }
   renameImage("", output);
-  print("\tChannels: (" + target + ")");
+  print("\tTarget: \"" + target + "\", Slices:");
   Array.print(stackSelection);
   return output;
 }
