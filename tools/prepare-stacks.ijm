@@ -41,7 +41,7 @@
  *
  *  Version:
  *
- *  v1.00 (2021-11-11)
+ *  v1.00 (2022-01-28)
  */
 
 print("\\Clear");
@@ -84,20 +84,20 @@ function processFile(file)
 
   if ( projectionChannels.length > 0 )
   {
-    // create projections from grouped slices
+    // create projections from multiple channels
     projectedChannels = projectStack(fileTitle, fileSlices, projectionChannels, projectionTarget);
     selectWindow(projectedChannels);
-    normalizePixelValues();
+    normalizePixelValues();  // normalize for stable classification results
     finalizeRun(filePath, fileName, projectionTarget);
   }
 
-  // create images from individual slices
+  // create images from individual channels
   fileSlicesLength = fileSlices.length;
   for ( i = 0; i < fileSlicesLength; ++i )
   {
     extractedChannel = projectStack(fileTitle, fileSlices, newArray(fileSlices[i]), fileSlices[i]);
     selectWindow(extractedChannel);
-    normalizePixelValues();
+    normalizePixelValues();  // normalize for balanced projection results
     finalizeRun(filePath, fileName, fileSlices[i]);
   }
 
@@ -134,10 +134,11 @@ function projectStack(image, slices, channels, target)
   channelsLength = channels.length;
   channelMatches = 0;
   slicesLength = slices.length;
-  stackSelection = "";
+  stackSelection = newArray(0);
 
   selectWindow(image);
 
+  // find matching channels with slice labels
   for (i = 1; i <= slicesLength; ++i)  // iterate through slices
   {
 
@@ -147,36 +148,32 @@ function projectStack(image, slices, channels, target)
       if ( slice == channels[j] ||
           slice.contains(toLowerCase(channels[j])  + " ") )  // matching pattern: "name "
       {
-        if ( stackSelection.length > 0 )  // append slices
-          stackSelection = stackSelection + ",";
-        stackSelection = stackSelection + toString(i);
+        stackSelection = Array.concat(stackSelection, i);
         channelMatches += 1;
       }
     }
 
   }
 
-  if ( channelMatches <= 1 )  // copy slice from stack
-  {
-    if ( channelMatches == 1 )  // select matching channel
-      setSlice(stackSelection);
-    run("Duplicate...", "title=slice-" + target);
-  }
-  else if ( channelMatches >= 2 ) // stack matching channels
-  {
-    run("Make Substack...", "channels=" + v2p(stackSelection));
-    renameImage("", "stack-" + target);
+  // extract matching slice labels for projection
+  run("Duplicate...", "title=" + v2p("stack-" + target) + " duplicate");
 
-    for (i = 0; i < channelMatches; ++i)
-    {
-      setSlice(i + 1);
+  for (k = slicesLength; k > 0; --k)  // reverse iterate through slices
+  {
+    setSlice(k);
+    if ( isInArray(stackSelection, k) )  // keep
       normalizePixelValues();  // normalize for balanced projection results
-    }
+    else if ( nSlices > 1 )  // remove
+      run("Delete Slice");
+  }
 
+  if ( nSlices > 1 )
+  {
     run("Z Project...", "projection=[Sum Slices]");  // project stack to image
     close("stack-*");  // close projection stack
   }
   renameImage("", output);
-  print("\tChannels: \"" + stackSelection + "\" (" + target + ")");
+  print("\tChannels: (" + target + ")");
+  Array.print(stackSelection);
   return output;
 }
