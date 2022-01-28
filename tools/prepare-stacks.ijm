@@ -97,7 +97,6 @@ function processFile(file)
   {
     extractedChannel = projectStack(fileTitle, fileSlices, newArray(fileSlices[i]), fileSlices[i]);
     selectWindow(extractedChannel);
-    normalizePixelValues();  // normalize for balanced projection results
     finalizeRun(filePath, fileName, fileSlices[i]);
   }
 
