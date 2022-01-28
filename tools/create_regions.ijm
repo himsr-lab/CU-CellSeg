@@ -285,12 +285,6 @@ function runWekaClassifier(image, target, path)
   close("Trainable Weka Segmentation*");  // title changes with version
   renameImage("", output);
 
-//  while ( nSlices() > 1 )  // use only first probability map
-//  {
-//    setSlice(nSlices());
-//    run("Delete Slice");
-//  }
-
   return output;
 }
 
