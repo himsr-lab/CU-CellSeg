@@ -41,7 +41,7 @@
  *
  *  Version:
  *
- *  v1.00 (2022-01-28)
+ *  v1.00 (2022-02-02)
  */
 
 print("\\Clear");
@@ -176,7 +176,7 @@ function projectStack(image, slices, channels, target)
     if ( isInArray(stackSelection, k) )  // keep
       normalizePixelValues();  // normalize for balanced projection results
     else if ( nSlices > 1 )  // remove
-      run("Delete Slice");
+      run("Delete Slice", "delete=channel");
   }
 
   if ( nSlices > 1 )

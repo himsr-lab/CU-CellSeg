@@ -53,7 +53,7 @@ userThresholds = newArray(false, 0.5, 1e30);  // default values
 targetName = "tu_st_gl";  // class label and file output
 suffixes = newArray(".tif", ".tiff");
 files = getFilesInFolder("Select the first TIFF of your dataset", suffixes);
-versionString = "v1.00 (2022-01-28)";
+versionString = "v1.00 (2022-02-02)";
 processFolder(files);
 
 /*
@@ -244,7 +244,7 @@ function projectStack(image, slices, channels, target)
     if ( isInArray(stackSelection, k) )  // keep
       normalizePixelValues();  // normalize for balanced projection results
     else if ( nSlices > 1 )  // remove
-      run("Delete Slice");
+      run("Delete Slice", "delete=channel");
   }
 
   if ( nSlices > 1 )

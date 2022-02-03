@@ -97,7 +97,7 @@ cellsFolder = "cells";  // destination subfolder for results files
 targetGroups = newArray(1, 2, 3, 4, 5, 9);  // group ids for corresponding targets
 targetNames = newArray("nu", "ce", "me", "cy", "cm");  // labels for classes and file output
 targetCounts = initializeArray(targetNames.length, 0);  // regions of interest counts
-versionString = "CU-CellSeg v1.00 (2022-01-28)\n" +
+versionString = "CU-CellSeg v1.00 (2022-02-02)\n" +
                  libraryVersion;
 
 
@@ -633,7 +633,7 @@ function projectStack(image, slices, channels, target)
     if ( isInArray(stackSelection, k) )  // keep
       normalizePixelValues();  // normalize for balanced projection results
     else if ( nSlices > 1 )  // remove
-      run("Delete Slice");
+      run("Delete Slice", "delete=channel");  // use "delete=slice" for XYCZT-ordered hyperstack
   }
 
   if ( nSlices > 1 )
@@ -713,7 +713,7 @@ function runWekaClassifier(image, target, path)
   while ( nSlices() > 1 )  // use only first probability map
   {
     setSlice(nSlices());
-    run("Delete Slice");
+    run("Delete Slice", "delete=channel");
   }
 
   return output;
