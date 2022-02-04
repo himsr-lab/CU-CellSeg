@@ -497,7 +497,8 @@ function matchNucleiWithCells(target, counts)
   nuclei = counts[0];
   rois = cells + nuclei;
   matched = initializeArray(cells, false);  // matching table for cells
-  offset = 100;  // offset from multithreaded cellular matrix segmentation
+  threads = parseInt(call("ij.util.ThreadUtil.getNbCpus"));  // number of CPU threads
+  offset = 8 * threads;  // empirical optimal jump offset
   roiManager("select", Array.getSequence(rois));  // select all regions
   RoiManager.setGroup(targetGroups[5]);  // unmatched regions, mark for later removal
 
