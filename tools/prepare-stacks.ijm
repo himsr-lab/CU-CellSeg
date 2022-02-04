@@ -41,15 +41,16 @@
  *
  *  Version:
  *
- *  v1.00 (2022-02-02)
+ *  v1.00 (2022-02-04)
  */
 
 print("\\Clear");
 
 run("Bio-Formats Macro Extensions");
 
-projectionTarget = "nuclei";
-projectionChannels = newArray("dapi", "dsdna");
+batchMode = true;
+projectionTarget = "nuclei-cytoplasm-membranes";
+projectionChannels = newArray("dapi", "beta-tubulin", "hla");
 suffixes = newArray(".tif", ".tiff");
 files = getFilesInFolder("Select the first TIFF of your dataset", suffixes);
 processFolder(files);
@@ -66,7 +67,7 @@ function processFolder(files)
 
 function processFile(file)
 {
-  toggleBatchMode(true, false);
+  toggleBatchMode(batchMode, false);
 
   // clear previous run
   print("\\Clear");
@@ -104,7 +105,7 @@ function processFile(file)
   Ext.close();
   close("*");
 
-  toggleBatchMode(true, false);
+  toggleBatchMode(batchMode, false);
 }
 
 // Function to finalize a segmentation run by saving all results
@@ -122,7 +123,7 @@ function finalizeRun(path, name, channel)
 }
 
 // Function to create a projected image from an image stack
-function projectStack(image, slices, channels, target)
+function projectStack(image, labels, channels, target)
 {
   // The slices used for the projection are identified by matching the slice labels
   // with the user-defined channel list. We're then creating a copy of the user-defined
@@ -132,59 +133,25 @@ function projectStack(image, slices, channels, target)
   output = target + "->proj";
   channelsLength = channels.length;
   channelMatches = 0;
-  slicesLength = slices.length;
-  stackSelection = newArray(0);
+  labelsLength = labels.length;
+  stackSelection = "";
 
-  selectWindow(image);
+  stackSelection = getSlicesFromLabels(labels, channels);
+  selectionStack = makeSubstack(image, stackSelection, "stack-" + target);
+  selectWindow(selectionStack);
 
-  // find matching channels with slice labels
-  for (i = 1; i <= slicesLength; ++i)  // iterate through slices
+  slices = nSlices;
+  for (i = 1; i <= slices; ++i)
   {
-
-    for (j = 0; j < channelsLength; ++j)  // match slice names with channels
-    {
-      slice = toLowerCase(slices[i - 1]);  // label pattern: "#" or "name (channel/mass)"
-      if ( slice == channels[j] ||
-          slice.contains(toLowerCase(channels[j])  + " ") )  // matching pattern: "name "
-      {
-        stackSelection = Array.concat(stackSelection, i);
-        channelMatches += 1;
-      }
-    }
-
+    setSlice(i);
+    normalizePixelValues();  // normalize for balanced projection results
   }
 
-  // print matching slice numbers
-  stackSelectionLength = stackSelection.length;
-  if ( stackSelectionLength == 0 )
-    print("\tNo matching slices");
-  else
-  {
-    if ( stackSelectionLength == 1 )
-      print("\tMatching slice:");
-    else
-      print("\tMatching slices:");
-    Array.print(stackSelection);
-  }
-
-  // extract matching slice labels for projection
-  run("Duplicate...", "title=" + v2p("stack-" + target) + " duplicate");
-
-  for (k = slicesLength; k > 0; --k)  // reverse iterate through slices
-  {
-    setSlice(k);
-    if ( isInArray(stackSelection, k) )  // keep
-      normalizePixelValues();  // normalize for balanced projection results
-    else if ( nSlices > 1 )  // remove
-      run("Delete Slice", "delete=channel");
-  }
-
-  if ( nSlices > 1 )
-  {
+  if ( slices > 1 )
     run("Z Project...", "projection=[Sum Slices]");  // project stack to image
-    close("stack-*");  // close projection stack
-  }
   renameImage("", output);
-
+  close("stack-*");  // close selection stack
+  print("\tChannels:");
+  Array.print(stackSelection);
   return output;
 }
