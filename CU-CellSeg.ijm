@@ -97,7 +97,7 @@ cellsFolder = "cells";  // destination subfolder for results files
 targetGroups = newArray(1, 2, 3, 4, 5, 9);  // group ids for corresponding targets
 targetNames = newArray("nu", "ce", "me", "cy", "cm");  // labels for classes and file output
 targetCounts = initializeArray(targetNames.length, 0);  // regions of interest counts
-versionString = "CU-CellSeg v1.00 (2022-02-03)\n" +
+versionString = "CU-CellSeg v1.00 (2022-02-04)\n" +
                  libraryVersion;
 
 
@@ -151,18 +151,21 @@ function processFile(file, thresholds)
     toPixels = Math.round(1.0 / 0.5 * (pixelCalibration[1] + pixelCalibration[2]));
   print("\t Calibration: " + toPixels + " pixel per " + pixelCalibration[0]);
 
-  // create projections and classifications for nuclei and cellular matrix
+  // create projections for nuclei and cellular matrix
+  setBatchMode(batchMode);  // avoid screen flickering during stack preparation
   projectedNuclei = projectStack(fileTitle, fileSlices, nucleiChannels, targetNames[0]);
+  if ( cellMatrixChannelsLength > 0 )
+    projectedCellMatrix = projectStack(fileTitle, fileSlices, cellMatrixChannels, targetNames[1]);
+  setBatchMode("exit and display");  // batch mode incompatible with Trainable Weka Segmentation plugin
+
+  // create classifications for nuclei and cellular matrix
   classifiedNuclei = classifyImage(projectedNuclei, targetNames[0], filePath);
   if ( cellMatrixChannelsLength > 0 )
-  {
-    projectedCellMatrix = projectStack(fileTitle, fileSlices, cellMatrixChannels, targetNames[1]);
     classifiedCellMatrix = classifyImage(projectedCellMatrix, targetNames[1], filePath);
-  }
   else
     classifiedCellMatrix = createImageFromTemplate(classifiedNuclei, "ce->none");
 
-  // projection and pixel classification incompatible with batch mode, safe from here
+  // batch mode safe from here
   toggleBatchMode(batchMode, false);
 
   // segment nuclei from projection, create distance mask for cell expansion limit
