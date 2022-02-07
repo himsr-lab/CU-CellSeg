@@ -53,7 +53,7 @@ userThresholds = newArray(false, 0.5, 1e30);  // default values
 targetName = "tu_st_gl";  // class label and file output
 suffixes = newArray(".tif", ".tiff");
 files = getFilesInFolder("Select the first TIFF of your dataset", suffixes);
-versionString = "v1.00 (2022-02-04)";
+versionString = "v1.00 (2022-02-07)";
 processFolder(files);
 
 /*
@@ -86,11 +86,15 @@ function processFile(file)
   fileSlices = readImage(file);
   fileTitle = getTitle();
 
-  // create donor classification
+  // create region projection
+  setBatchMode(batchMode);  // avoid screen flickering during stack preparation
   projectedRegion = projectStack(fileTitle, fileSlices, regionChannels, targetName);
+  setBatchMode("exit and display");  // batch mode incompatible with Trainable Weka Segmentation plugin
+
+  // create region classification
   classifiedRegion = classifyImage(projectedRegion, targetName, filePath);
 
-  // projection and pixel classification incompatible with batch mode, safe from here
+  // batch mode safe from here
   toggleBatchMode(batchMode, false);
 
   // create binary map with theshold values upon request

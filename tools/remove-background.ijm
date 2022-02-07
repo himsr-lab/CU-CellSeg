@@ -53,7 +53,7 @@
  *
  *  Version:
  *
- *  v1.00 (2022-02-04)
+ *  v1.00 (2022-02-07)
  */
 
 print("\\Clear");
@@ -101,11 +101,15 @@ function processFile(file)
   fileSlices = readImage(file);
   fileTitle = getTitle();
 
-  // create donor classification
+  // create donor projection
+  setBatchMode(batchMode);  // avoid screen flickering during stack preparation
   projectedDonor = projectStack(fileTitle, fileSlices, donorChannels, targetName);
+  setBatchMode("exit and display");  // batch mode incompatible with Trainable Weka Segmentation plugin
+
+  // create donor classification
   classifiedDonor = classifyImage(projectedDonor, targetName, filePath);
 
-  // projection and pixel classification incompatible with batch mode, safe from here
+  // batch mode safe from here
   toggleBatchMode(batchMode, false);
 
   // create binary map with theshold values upon request
