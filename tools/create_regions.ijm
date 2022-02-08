@@ -46,13 +46,15 @@ print("\\Clear");
 run("Bio-Formats Macro Extensions");
 
 batchMode = true;
+lowerCutoff = 10;  // minimum region size [units] as freqency cutoff
 regionChannels = newArray("autofluorescence", "ck", "dapi");
 regionClasses = newArray("Tumor (positive)", "Stroma (negative)", "Glass (neutral)");
 regionFolder = "regions";
-userThresholds = newArray(false, 0.5, 1e30);  // default values
-targetName = "tu_st_gl";  // class label and file output
+scalingFactor = 0.25;
 suffixes = newArray(".tif", ".tiff");
 files = getFilesInFolder("Select the first TIFF of your dataset", suffixes);
+targetName = "tu_st_gl";  // class label and file output
+userThresholds = newArray(false, 0.5, 1e30);  // default values
 versionString = "v1.00 (2022-02-07)";
 processFolder(files);
 
@@ -86,9 +88,27 @@ function processFile(file)
   fileSlices = readImage(file);
   fileTitle = getTitle();
 
+  // get calibration data from image file
+  pixelCalibration = getPixelCalibration();
+  if ( pixelCalibration[0] == "pixels" )  // no conversion required
+    toPixels = 1.0;
+  else  // calculate conversion factor
+    toPixels = Math.round(1.0 / 0.5 * (pixelCalibration[1] + pixelCalibration[2]));
+  print("\t Calibration: " + toPixels + " pixel per " + pixelCalibration[0]);
+
   // create region projection
   setBatchMode(batchMode);  // avoid screen flickering during stack preparation
   projectedRegion = projectStack(fileTitle, fileSlices, regionChannels, targetName);
+  if ( scalingFactor != 1.0 )  // (optional) rescale image file
+  {
+    print("\tScaling factor: " + scalingFactor);
+    projectedRegion = projectedRegion + "->(*f)";
+    getDimensions(width, height, channels, slices, frames);
+    run("Scale...", "x=" + v2p(scalingFactor) + " y=" + v2p(scalingFactor) +
+                   " z=1.0 width=" + v2p(width) + " height=" + v2p(height) + " depth=" + v2p(slices) +
+                   " interpolation=Bicubic average process create" +
+                   " title=" + v2p(projectedRegion));
+  }
   setBatchMode("exit and display");  // batch mode incompatible with Trainable Weka Segmentation plugin
 
   // create region classification
@@ -97,6 +117,36 @@ function processFile(file)
   // batch mode safe from here
   toggleBatchMode(batchMode, false);
 
+  // (optional) rescale image file back
+  if ( scalingFactor != 1.0 )
+  {
+    scalingFactor = 1.0 / scalingFactor;
+    print("\tScaling factor: " + scalingFactor);
+    classifiedRegion = classifiedRegion + "->(*1/f)";
+    getDimensions(width, height, channels, slices, frames);
+    run("Scale...", "x=" + v2p(scalingFactor) + " y=" + v2p(scalingFactor) +
+                   " z=1.0 width=" + v2p(width) + " height=" + v2p(height) + " depth=" + v2p(slices) +
+                   " interpolation=Bicubic average process create" +
+                   " title=" + v2p(classifiedRegion));
+  }
+
+  // bandpass-filter probability map
+  if ( lowerCutoff > 0 )
+  {
+    getDimensions(width, height, channels, slices, frames);
+    if ( height > width )
+      upperCutoff = height;
+    else  // width >= height
+      upperCutoff = width;
+    upperCutoff = Math.round(1e30);  // no limit, in pixels
+    lowerCutoff = Math.round(toPixels * lowerCutoff);  // limit, from units to pixels
+    print("\tUpper cutoff: " + (upperCutoff / toPixels) + " " + pixelCalibration[0]);
+    print("\tLower cutoff: " + (lowerCutoff / toPixels) + " " + pixelCalibration[0]);
+    run("Bandpass Filter...", "filter_large=" + v2p(upperCutoff) +
+                             " filter_small=" + v2p(lowerCutoff) +
+                             " suppress=None process");
+  }
+
   // create binary map with theshold values upon request
   setUserThresholds(userThresholds);
   if ( userThresholds[1] != -1e30 || userThresholds[2] != 1e30 )
@@ -104,7 +154,7 @@ function processFile(file)
     setOption("BlackBackground", true);  // don't invert LUT
     run("Convert to Mask", "method=Default background=Dark black");
 
-    for (i = 0; i < nSlices; ++i)  // thresholding runs on stack, rescaling not
+    for (i = 0; i < nSlices; ++i)  // thresholding runs on stack, rescaling does not
     {
       setSlice(i + 1);
       rescalePixelValues(NaN, NaN, 0, 1);
