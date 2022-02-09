@@ -28,8 +28,9 @@
  *
  *  Creates normalized projections for the selected 'regionChannels' and classifies
  *  these into the 'regionClasses' using the "Trainable Weka Segmentation" plugin.
- *  The corresponding probability maps are then thresholded by the user and the
- *  binary segmentation maps transfered into "ROI Manager" entries.
+ *  The corresponding region labels can be median-filtered to suppress smaller
+ *  regions while preserving the general dimensions (no blurring).
+ *  The resulting segmentation maps will be converted into "ROI Manager" entries.
  *  The macro saves a log file, the binary segmentation maps, and the regions of
  *  interest into the regions folder of each input image.
  *  The traces used for the training and the model used for the classification
@@ -46,16 +47,15 @@ print("\\Clear");
 run("Bio-Formats Macro Extensions");
 
 batchMode = true;
-lowerCutoff = 10;  // minimum region size [units] as freqency cutoff
+medianFilter = 10;  // radius [units]
 regionChannels = newArray("autofluorescence", "ck", "dapi");
 regionClasses = newArray("Tumor (positive)", "Stroma (negative)", "Glass (neutral)");
 regionFolder = "regions";
-scalingFactor = 0.25;
+scalingFactor = 0.25;  // increase classification speed by downscaling
 suffixes = newArray(".tif", ".tiff");
 files = getFilesInFolder("Select the first TIFF of your dataset", suffixes);
 targetName = "tu_st_gl";  // class label and file output
-userThresholds = newArray(false, 0.5, 1e30);  // default values
-versionString = "v1.00 (2022-02-07)";
+versionString = "v1.00 (2022-02-09)";
 processFolder(files);
 
 /*
@@ -130,45 +130,28 @@ function processFile(file)
                    " title=" + v2p(classifiedRegion));
   }
 
-  // bandpass-filter probability map
-  if ( lowerCutoff > 0 )
+  // Median-filter probability map
+  if ( medianFilter > 0 )
   {
-    getDimensions(width, height, channels, slices, frames);
-    if ( height > width )
-      upperCutoff = height;
-    else  // width >= height
-      upperCutoff = width;
-    upperCutoff = Math.round(1e30);  // no limit, in pixels
-    lowerCutoff = Math.round(toPixels * lowerCutoff);  // limit, from units to pixels
-    print("\tUpper cutoff: " + (upperCutoff / toPixels) + " " + pixelCalibration[0]);
-    print("\tLower cutoff: " + (lowerCutoff / toPixels) + " " + pixelCalibration[0]);
-    run("Bandpass Filter...", "filter_large=" + v2p(upperCutoff) +
-                             " filter_small=" + v2p(lowerCutoff) +
-                             " suppress=None process");
+    print("\tMedian filter: " + medianFilter + " " + pixelCalibration[0]);
+    medianFilter = Math.round(toPixels * medianFilter);  // radius, from units to pixels
+    run("Median...", "radius=" + v2p(medianFilter));  // preserve edges
   }
 
-  // create binary map with theshold values upon request
-  setUserThresholds(userThresholds);
-  if ( userThresholds[1] != -1e30 || userThresholds[2] != 1e30 )
-  {
-    setOption("BlackBackground", true);  // don't invert LUT
-    run("Convert to Mask", "method=Default background=Dark black");
-
-    for ( i = 0; i < nSlices; ++i )  // thresholding runs on stack, rescaling does not
-    {
-      setSlice(i + 1);
-      rescalePixelValues(NaN, NaN, 0, 1);
-    }
-
-  }
 
   // get regions of interest (tissue segmentation)
-  regionClassesLength = regionClasses.length;
-  for ( i = 0; i < regionClassesLength; ++i )
-  {
-    setSlice(i + 1);
-    getRoisFromMasks(regionClasses[i], true);
-  }
+   run("Grays");  // change LUT to grayscals
+   run("Add...", "value=1");  // detect all regions (first region with value of zero)
+   updateDisplayRange(NaN, NaN);
+   getRoisFromMasks(regionClasses[i], true);
+
+   rois = roiManager("count");
+   for ( i = 0; i < rois; ++i )
+   {
+     renameRegion(i, toString(i + 1) + delimiter + regionClasses[i]);
+   }
+   roiManager("Deselect");
+   roiManager("Show All");
 
   // save and clear run, free memory
   finalizeRun(filePath, fileName);
@@ -222,27 +205,6 @@ function finalizeRun(path, name)
   saveLogFile(txtFile);
 }
 
-// Function reads user-defined threshold values
-function getUserThresholds(thresholds)
-{
-  title =   "Finalize thresholds limits";
-  message = "Set the limits in the Threshold window and\n" +
-            "cover the background with the blue mask:\n" +
-            "Leave the white sample regions unmasked.\n \n" +
-            "The macro will apply the new thresholds,\n" +
-            "upon confirming this dialog with OK,\n" +
-            "but stop execution with Cancel.";
-
-  toggleBatchMode(batchMode, true);  // stay in batch mode, but show current image
-  run("Threshold...");
-  call("ij.plugin.frame.ThresholdAdjuster.setMethod", "Default");  // preset Window defaults
-  call("ij.plugin.frame.ThresholdAdjuster.setMode", "Over/Under");
-  waitForUser(title, message);
-  getThreshold(thresholds[1], thresholds[2]);
-  run("Close");
-  toggleBatchMode(batchMode, true);  // hide image and (re-)enter batch mode
-}
-
 // Function to create a projected image from an image stack
 function projectStack(image, labels, channels, target)
 {
@@ -262,7 +224,7 @@ function projectStack(image, labels, channels, target)
   selectWindow(selectionStack);
 
   slices = nSlices;
-  for ( i = 1; i <= slices; ++i )
+  for (i = 1; i <= slices; ++i)
   {
     setSlice(i);
     normalizePixelValues();  // normalize for balanced projection results
@@ -285,7 +247,7 @@ function runWekaClassifier(image, target, path)
   // since these variable times are highly system-dependent. This problem was
   // solved by frequently checking for the currently selected image name:
   // By default, newly opened or created images get the focus in ImageJ2.
-  output = image + "->prob";
+  output = image + "->reg";
   classifier = path + target +".model";
   data = path + target +".arff";
   title =   "Finalize classifier training";
@@ -312,21 +274,10 @@ function runWekaClassifier(image, target, path)
   }
   print("\tUsing classifier found in dataset folder...");
   call("trainableSegmentation.Weka_Segmentation.loadClassifier", classifier);
-  call("trainableSegmentation.Weka_Segmentation.getProbability");
-  waitForWindow("Probability maps");  // computation time machine-dependent
+  call("trainableSegmentation.Weka_Segmentation.getResult");  // get result label image
+  waitForWindow("Classified image");  // computation time machine-dependent
   close("Trainable Weka Segmentation*");  // title changes with version
   renameImage("", output);
 
   return output;
-}
-
-// Function reads user-defined threshold values
-function setUserThresholds(thresholds)
-{
-  setThreshold(thresholds[1], thresholds[2]);  // preset default values
-  if ( thresholds[0] == false )  // check for custom values
-    getUserThresholds(thresholds);
-  setThreshold(thresholds[1], thresholds[2]);
-  thresholds[0] = true;
-  print("\tThresholds: " + thresholds[1] + " (lower), " + thresholds[2] + " (upper)");
 }
