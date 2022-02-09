@@ -275,7 +275,7 @@ function createCompartments(target, counts)
   nucleusArea = 0.0;
 
   last = counts[0] + counts[1] - 1;
-  for (i = last; i >= 0; --i )  // iterate through cells and nuclei in reverse order
+  for ( i = last; i >= 0; --i )  // iterate through cells and nuclei in reverse order
   {
     roiManager("select", i);
     if ( i % 2 != 0 )  // nuclei
@@ -503,7 +503,7 @@ function matchNucleiWithCells(target, counts)
   RoiManager.setGroup(targetGroups[5]);  // unmatched regions, mark for later removal
 
   showProgress(0);  // reset progress bar
-  for (n = 0; n < nuclei; ++n)  // iterate through nuclei
+  for ( n = 0; n < nuclei; ++n )  // iterate through nuclei
   {
     found = false;  // track matching of nucleus with cell
     overlap = false;  // track overlap of nucleus with cell
@@ -512,7 +512,7 @@ function matchNucleiWithCells(target, counts)
       c = n - offset;
     else
       c = 0;  // relative cell index for list of cells
-    for (d = 0; ( !found ) && ( d < cells ); ++d)  // cycle through cells
+    for ( d = 0; ( !found ) && ( d < cells ); ++d )  // cycle through cells
     {
       if ( matched[c] == false )  // cell not yet matched
       {
@@ -572,7 +572,7 @@ function measureRegions(image)
   run("Set Measurements...", "area mean standard modal min centroid center perimeter bounding fit shape feret's " +
       "integrated median skewness kurtosis area_fraction stack display scientific nan redirect=None decimal=3");
 
-  for (i = 0; i < slices; ++i)
+  for ( i = 0; i < slices; ++i )
   {
     setSlice(i + 1);
     roiManager("measure");  // add measurement to Results window
@@ -601,7 +601,7 @@ function projectStack(image, labels, channels, target)
   selectWindow(selectionStack);
 
   slices = nSlices;
-  for (i = 1; i <= slices; ++i)
+  for ( i = 1; i <= slices; ++i )
   {
     setSlice(i);
     normalizePixelValues();  // normalize for balanced projection results

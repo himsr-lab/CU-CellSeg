@@ -141,7 +141,7 @@ function projectStack(image, labels, channels, target)
   selectWindow(selectionStack);
 
   slices = nSlices;
-  for (i = 1; i <= slices; ++i)
+  for ( i = 1; i <= slices; ++i )
   {
     setSlice(i);
     normalizePixelValues();  // normalize for balanced projection results

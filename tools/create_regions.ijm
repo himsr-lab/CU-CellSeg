@@ -154,7 +154,7 @@ function processFile(file)
     setOption("BlackBackground", true);  // don't invert LUT
     run("Convert to Mask", "method=Default background=Dark black");
 
-    for (i = 0; i < nSlices; ++i)  // thresholding runs on stack, rescaling does not
+    for ( i = 0; i < nSlices; ++i )  // thresholding runs on stack, rescaling does not
     {
       setSlice(i + 1);
       rescalePixelValues(NaN, NaN, 0, 1);
@@ -164,7 +164,7 @@ function processFile(file)
 
   // get regions of interest (tissue segmentation)
   regionClassesLength = regionClasses.length;
-  for (i = 0; i < regionClassesLength; ++i)
+  for ( i = 0; i < regionClassesLength; ++i )
   {
     setSlice(i + 1);
     getRoisFromMasks(regionClasses[i], true);
@@ -262,7 +262,7 @@ function projectStack(image, labels, channels, target)
   selectWindow(selectionStack);
 
   slices = nSlices;
-  for (i = 1; i <= slices; ++i)
+  for ( i = 1; i <= slices; ++i )
   {
     setSlice(i);
     normalizePixelValues();  // normalize for balanced projection results

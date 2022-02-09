@@ -132,10 +132,10 @@ function processFile(file)
   else  // apply to selected channels only
   {
     fileSlicesLength = fileSlices.length;
-    for (i = 1; i <= fileSlicesLength; ++i)  // iterate through slices
+    for ( i = 1; i <= fileSlicesLength; ++i )  // iterate through slices
     {
 
-      for (j = 0; j < receptorChannelsLength; ++j)  // match slice names with channels
+      for ( j = 0; j < receptorChannelsLength; ++j )  // match slice names with channels
       {
         slice = toLowerCase(fileSlices[i - 1]);  // label pattern: "#" or "name (channel/mass)"
         if ( slice == receptorChannels[j] ||
@@ -237,7 +237,7 @@ function projectStack(image, labels, channels, target)
   selectWindow(selectionStack);
 
   slices = nSlices;
-  for (i = 1; i <= slices; ++i)
+  for ( i = 1; i <= slices; ++i )
   {
     setSlice(i);
     normalizePixelValues();  // normalize for balanced projection results

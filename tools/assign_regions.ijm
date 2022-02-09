@@ -99,7 +99,7 @@ function processFile(file)
   print("\t" + regionPath);
   objects = getFileList(regionPath);  // files and folders
   objectsLength = objects.length;
-  for (i = 0; i < objectsLength; ++i)  // tissue segments in folder
+  for ( i = 0; i < objectsLength; ++i )  // tissue segments in folder
   {
     objectPath = regionPath + File.separator + objects[i];
     if( endsWithEither(objectPath, roiSuffixes) )
@@ -124,7 +124,7 @@ function processFile(file)
   print("\t" + cellPath);
   objects = getFileList(cellPath);  // files and folders
   objectsLength = objects.length;
-  for (i = 0; i < objectsLength; ++i)  // cell segments in folder
+  for ( i = 0; i < objectsLength; ++i )  // cell segments in folder
   {
     objectPath = cellPath + File.separator + objects[i];
     if( endsWithEither(objectPath, roiSuffixes) )
