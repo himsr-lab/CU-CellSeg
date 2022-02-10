@@ -143,7 +143,7 @@ function processFile(file)
    run("Grays");  // change LUT to grayscals
    run("Add...", "value=1");  // detect all regions (first region with value of zero)
    updateDisplayRange(NaN, NaN);
-   getRoisFromMasks(regionClasses[i], true);
+   getRoisFromMasks("region", true);
 
    rois = roiManager("count");
    for ( i = 0; i < rois; ++i )
