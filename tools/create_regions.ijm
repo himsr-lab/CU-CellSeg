@@ -140,7 +140,7 @@ function processFile(file)
 
 
   // get regions of interest (tissue segmentation)
-   run("Grays");  // change LUT to grayscals
+   run("Grays");  // change LUT to grayscale
    run("Add...", "value=1");  // detect all regions (first region with value of zero)
    updateDisplayRange(NaN, NaN);
    getRoisFromMasks("region", true);
