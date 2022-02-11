@@ -28,8 +28,7 @@
  *
  *  Creates the region label image in the "Trainable Weka Segmentation" plugin,
  *  median-filters the result for the currently selected slice and transfers
- *  the corresponding regions to the
- ROI Manager.
+ *  the corresponding regions to the ROI Manager.
  *  The resulting regions of interest are displayed as red region outlines on
  *  top of the initial image slice and can be analyzed in the "ROI Manager".
  *
