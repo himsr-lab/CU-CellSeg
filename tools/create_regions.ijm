@@ -47,7 +47,7 @@ print("\\Clear");
 run("Bio-Formats Macro Extensions");
 
 batchMode = true;
-medianFilter = 10;  // radius [units]
+medianFilter = 5;  // radius [units]
 regionChannels = newArray("autofluorescence", "ck", "dapi");
 regionClasses = newArray("Tumor (positive)", "Stroma (negative)", "Glass (neutral)");
 regionFolder = "regions";

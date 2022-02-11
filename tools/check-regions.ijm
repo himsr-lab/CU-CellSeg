@@ -42,7 +42,7 @@
  *  v1.00 (2022-02-11)
  */
 
-medianFilter = 10;  // radius [units]
+medianFilter = 5;  // radius [units]
 regionClasses = newArray("Tumor (positive)", "Stroma (negative)", "Glass (neutral)");
 scalingFactor = 0.25;
 
