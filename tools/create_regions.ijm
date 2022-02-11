@@ -55,7 +55,7 @@ scalingFactor = 0.25;  // increase classification speed by downscaling
 suffixes = newArray(".tif", ".tiff");
 files = getFilesInFolder("Select the first TIFF of your dataset", suffixes);
 targetName = "tu_st_gl";  // class label and file output
-versionString = "v1.00 (2022-02-09)";
+versionString = "v1.00 (2022-02-11)";
 processFolder(files);
 
 /*
@@ -120,11 +120,11 @@ function processFile(file)
   // (optional) rescale image file back
   if ( scalingFactor != 1.0 )
   {
-    scalingFactor = 1.0 / scalingFactor;
-    print("\tScaling factor: " + scalingFactor);
+    invertedScalingFactor = 1.0 / scalingFactor;
+    print("\tScaling factor: " + invertedScalingFactor);
     classifiedRegion = classifiedRegion + "->(*1/f)";
     getDimensions(width, height, channels, slices, frames);
-    run("Scale...", "x=" + v2p(scalingFactor) + " y=" + v2p(scalingFactor) +
+    run("Scale...", "x=" + v2p(invertedScalingFactor) + " y=" + v2p(invertedScalingFactor) +
                    " z=1.0 width=" + v2p(width) + " height=" + v2p(height) + " depth=" + v2p(slices) +
                    " interpolation=Bicubic average process create" +
                    " title=" + v2p(classifiedRegion));
