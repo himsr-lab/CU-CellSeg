@@ -28,7 +28,8 @@
  *
  *  Creates the region label image in the "Trainable Weka Segmentation" plugin,
  *  median-filters the result for the currently selected slice and transfers
- *  the corresponding regions to the ROI Manager.
+ *  the corresponding regions to the
+ ROI Manager.
  *  The resulting regions of interest are displayed as red region outlines on
  *  top of the initial image slice and can be analyzed in the "ROI Manager".
  *
@@ -39,7 +40,7 @@
  *
  *  Version:
  *
- *  v1.00 (2022-02-09)
+ *  v1.00 (2022-02-11)
  */
 
 medianFilter = 10;  // radius [units]
@@ -62,16 +63,34 @@ else  // calculate conversion factor
 // get the result label image
 call("trainableSegmentation.Weka_Segmentation.getResult");
 waitForWindow("Classified image");  // computation time machine-dependent
-selectWindow("Classified image");
 setSlice(slice);
 run("Duplicate...", "title=Classified");  // selected slice only
-setBatchMode("hide");
+
+// (optional) rescale image file back
+if ( scalingFactor != 1.0 )
+{
+  invertedScalingFactor = 1.0 / scalingFactor;
+  getDimensions(width, height, channels, slices, frames);
+  run("Scale...", "x=" + v2p(invertedScalingFactor) + " y=" + v2p(invertedScalingFactor) +
+                 " z=1.0 width=" + v2p(width) + " height=" + v2p(height) + " depth=" + v2p(slices) +
+                 " interpolation=Bicubic average process create" +
+                 " title=" + v2p(getTitle() + "->(*1/f)"));
+}
 
 // Median-filter probability map
 if ( medianFilter > 0 )
 {
-  medianFilter = Math.round(scalingFactor * toPixels * medianFilter);  // radius, from units to pixels
+  medianFilter = Math.round(toPixels * medianFilter);  // radius, from units to pixels
   run("Median...", "radius=" + v2p(medianFilter));  // preserve edges
+}
+
+if ( scalingFactor != 1.0 )  // (optional) rescale image file
+{
+  getDimensions(width, height, channels, slices, frames);
+  run("Scale...", "x=" + v2p(scalingFactor) + " y=" + v2p(scalingFactor) +
+                 " z=1.0 width=" + v2p(width) + " height=" + v2p(height) + " depth=" + v2p(slices) +
+                 " interpolation=Bicubic average process create" +
+                 " title=" + v2p(getTitle() + "->(*f)"));
 }
 
 // get regions of interest (tissue segmentation)
