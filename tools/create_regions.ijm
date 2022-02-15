@@ -55,7 +55,7 @@ scalingFactor = 0.25;  // increase classification speed by downscaling
 suffixes = newArray(".tif", ".tiff");
 files = getFilesInFolder("Select the first TIFF of your dataset", suffixes);
 targetName = "tu_st_gl";  // class label and file output
-versionString = "v1.00 (2022-02-11)";
+versionString = "v1.00 (2022-02-15)";
 processFolder(files);
 
 /*
@@ -140,6 +140,7 @@ function processFile(file)
 
 
   // get regions of interest (tissue segmentation)
+   run("32-bit");  // allows for better thumbnail preview (fixed scaling for 8-bit)
    run("Grays");  // change LUT to grayscale
    run("Add...", "value=1");  // detect all regions (first region with value of zero)
    updateDisplayRange(NaN, NaN);
