@@ -26,11 +26,11 @@
  *
  *  Description:
  *
- *  First loads all regions of interest with tissue segments from the regions folder and
- *  then loads all regions of interest with cell segmentation data from hte cells folder.
- *  Using the "ROI Manager", the macro calculates the relative overlap (percentage) between
- *  the tissue segments and the cellular compartments. The results are stored in a table
- *  and finally exported to a comma-separated value file in the regions folder.
+ *  The macro loads a region mask image to identify region locations and the corresponding
+ *  regions of interest to retrieve the ROI labels. In the next step, the cell segmentation
+ *  data is loaded and the overlap for each each with each region (in percent) calculated.
+ *  The results are stored in a table and finally exported to a comma-separated value file
+ *  in the regions folder.
  *  Please organize your data in the following file system structure:
  *
  *  ./image.tiff
@@ -40,6 +40,7 @@
  *        *.zip
  *      ./regions/
  *        *.roi
+ *        *.tif
  *        *.zip
  *
  *  Dependencies:
@@ -56,7 +57,8 @@ fileSuffixes = newArray(".tif", ".tiff");
 files = getFilesInFolder("Select the first TIFF of your dataset", fileSuffixes);
 regionFolder = "regions";
 roiSuffixes = newArray(".roi", ".zip");
-versionString = "v1.00 (2021-01-25)";
+targetName = "tu_st_gl";  // model label from region creation
+versionString = "v1.00 (2021-02-18)";
 processFolder(files);
 
 
@@ -90,8 +92,14 @@ function processFile(file)
   // read image file
   filePath = File.getDirectory(file);
   fileName = File.getName(file);
-  fileSlices = readImage(file);
   fileLabel = File.getNameWithoutExtension(fileName);
+  regionPath = filePath + File.separator + fileLabel + File.separator + regionFolder;
+  file = regionPath + File.separator + targetName + ".tif";  // region (target) image
+  fileSlices = readImage(file);
+  getRawStatistics(nPixels, mean, min, max, std, histogram);
+  if ( min > 0 )  // min == 1 for first region mask
+    run("Subtract...", "value=" + v2p(min));  // match pixel values with region indices
+  updateDisplayRange(NaN, NaN);
 
   // load regions of interest (tissue segments)
   print("\n*** Processing regions ***");
@@ -134,24 +142,33 @@ function processFile(file)
   // set up results table
   tableName = regionFolder;
   Table.create(tableName);  // creates and resets a table
-  regionOverlap = -1;  // value not determined yet
-  roiHeader = "Label";  // consistent with Results table
 
   // write matches of rois (cell segments) and regions (tissue segments) to table
+  per_centum = 100.0;  // scale to percent
+  roiHeader = "Label";  // consistent with Results table
+
   rois = roiManager("count");
   for ( roi = regionNamesLength; roi < rois; ++roi )
   {
+    roiManager("select", roi);
+    Roi.getContainedPoints(roi_xx, roi_yy);  // retrieve cell coordinates, slow
+    roi_xx_length = roi_xx.length;
+
+    // assign pixels to regions (faster than the computation with ROIs)
+    regionOverlap = initializeArray(regionNamesLength, 0);
+    for ( p = 0; p < roi_xx_length; ++p )
+    {
+      regionOverlap[getPixel(roi_xx[p], roi_yy[p])] += 1;  // increment region counters, fast
+    }
+
+    // write proportional region overlap into table
     rowIndex = roi - regionNamesLength;
     roiLabel = fileName + ":" + getRegionName(roi);
+    Table.set(roiHeader, rowIndex, roiLabel, tableName);
 
     for ( reg = 0; reg < regionNamesLength; ++reg )
     {
-      Table.set(roiHeader, rowIndex, roiLabel, tableName);
-      if ( isInBounds(reg, roi) )  // fast approximation
-        regionOverlap = getRegionOverlap(reg, roi);
-      else
-        regionOverlap = 0;
-      Table.set(regionNames[reg], rowIndex, regionOverlap, tableName);
+      Table.set(regionNames[reg], rowIndex, (per_centum * regionOverlap[reg] / roi_xx_length), tableName);
     }
   }
 
