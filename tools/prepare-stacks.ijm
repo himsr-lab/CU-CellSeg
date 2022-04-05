@@ -41,7 +41,7 @@
  *
  *  Version:
  *
- *  v1.00 (2022-02-04)
+ *  v1.00 (2022-04-05)
  */
 
 print("\\Clear");
@@ -49,8 +49,8 @@ print("\\Clear");
 run("Bio-Formats Macro Extensions");
 
 batchMode = true;
-projectionTarget = "nuclei-cytoplasm-membranes";
-projectionChannels = newArray("dapi", "beta-tubulin", "hla");
+projectionTarget = "tumor-stroma-glass";
+projectionChannels = newArray("autofluorescence", "ck", "dapi");
 suffixes = newArray(".tif", ".tiff");
 files = getFilesInFolder("Select the first TIFF of your dataset", suffixes);
 processFolder(files);
