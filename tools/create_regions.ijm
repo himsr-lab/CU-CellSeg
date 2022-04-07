@@ -51,11 +51,11 @@ medianFilter = 5;  // radius [units]
 regionChannels = newArray("autofluorescence", "ck", "dapi");
 regionClasses = newArray("Tumor (positive)", "Stroma (negative)", "Glass (neutral)");
 regionFolder = "regions";
-scalingFactor = 0.25;  // increase classification speed by downscaling
+scalingFactor = 0.5;  // increase classification speed by downscaling
 suffixes = newArray(".tif", ".tiff");
 files = getFilesInFolder("Select the first TIFF of your dataset", suffixes);
 targetName = "tu_st_gl";  // class label and file output
-versionString = "v1.00 (2022-02-15)";
+versionString = "v1.00 (2022-04-07)";
 processFolder(files);
 
 /*

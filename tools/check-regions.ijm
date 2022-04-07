@@ -39,12 +39,12 @@
  *
  *  Version:
  *
- *  v1.00 (2022-02-15)
+ *  v1.00 (2022-04-07)
  */
 
 medianFilter = 5;  // radius [units]
 regionClasses = newArray("Tumor (positive)", "Stroma (negative)", "Glass (neutral)");
-scalingFactor = 0.25;
+scalingFactor = 0.5;
 
 run("ROI Manager...");  // start before batch mode
 deleteAllRegions();
