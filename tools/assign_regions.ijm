@@ -52,7 +52,7 @@
 print("\\Clear");
 run("ROI Manager...");  // start before batch mode
 batchMode = true;
-cellFolder = "cells";
+cellsFolder = "cells";
 fileSuffixes = newArray(".tif", ".tiff");
 files = getFilesInFolder("Select the first TIFF of your dataset", fileSuffixes);
 regionFolder = "regions";
@@ -128,13 +128,13 @@ function processFile(file)
   regionNamesLength = regionNames.length;
 
   // load regions of interest (cell segments)
-  cellPath = filePath + File.separator + fileLabel + File.separator + cellFolder;
-  print("\t" + cellPath);
-  objects = getFileList(cellPath);  // files and folders
+  cellsPath = filePath + File.separator + fileLabel + File.separator + cellsFolder;
+  print("\t" + cellsPath);
+  objects = getFileList(cellsPath);  // files and folders
   objectsLength = objects.length;
   for ( i = 0; i < objectsLength; ++i )  // cell segments in folder
   {
-    objectPath = cellPath + File.separator + objects[i];
+    objectPath = cellsPath + File.separator + objects[i];
     if( endsWithEither(objectPath, roiSuffixes) )
       roiManager("open", objectPath);
   }
