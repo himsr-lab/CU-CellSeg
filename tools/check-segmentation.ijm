@@ -40,14 +40,17 @@
  *
  *  Version:
  *
- *  v1.00 (2021-10-22)
+ *  v1.00 (2022-04-28)
  */
 
 nucleiFilling = false;  // fixes nuclei with darker centers
 userThresholds = newArray(0.75, 1e30);  // upper and lower limit
+trainClassifier = true;  // train before updating segmentation
 
 run("ROI Manager...");  // start before batch mode
 setBatchMode(true);
+if ( trainClassifier == true )
+  call("trainableSegmentation.Weka_Segmentation.trainClassifier")
 focusWindow("Trainable Weka Segmentation");
 Stack.getPosition(channel, slice, frame);
 call("trainableSegmentation.Weka_Segmentation.getProbability");
