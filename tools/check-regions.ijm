@@ -39,16 +39,19 @@
  *
  *  Version:
  *
- *  v1.00 (2022-04-07)
+ *  v1.00 (2022-04-28)
  */
 
 medianFilter = 5;  // radius [units]
 regionClasses = newArray("Tumor (positive)", "Stroma (negative)", "Glass (neutral)");
 scalingFactor = 0.5;
+trainClassifier = true;  // train before updating segmentation
 
 run("ROI Manager...");  // start before batch mode
 deleteAllRegions();
 setBatchMode(true);
+if ( trainClassifier == true )
+  call("trainableSegmentation.Weka_Segmentation.trainClassifier")
 focusWindow("Trainable Weka Segmentation");
 Stack.getPosition(channel, slice, frame);
 
